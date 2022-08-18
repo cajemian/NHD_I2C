@@ -1,18 +1,25 @@
 /*******************************************************************************
-  System Definitions
+  External Interrupt Controller (EIC) PLIB
 
-  File Name:
-    definitions.h
+  Company
+    Microchip Technology Inc.
 
-  Summary:
-    project system definitions.
+  File Name
+    plib_eic.h
 
-  Description:
-    This file contains the system-wide prototypes and definitions for a project.
+  Summary
+    EIC PLIB Header File.
 
- *******************************************************************************/
+  Description
+    This file defines the interface to the EIC peripheral library. This
+    library provides access to and control of the associated peripheral
+    instance.
 
-//DOM-IGNORE-BEGIN
+  Remarks:
+    None.
+*******************************************************************************/
+
+// DOM-IGNORE-BEGIN
 /*******************************************************************************
 * Copyright (C) 2018 Microchip Technology Inc. and its subsidiaries.
 *
@@ -34,109 +41,62 @@
 * FULLEST EXTENT ALLOWED BY LAW, MICROCHIP'S TOTAL LIABILITY ON ALL CLAIMS IN
 * ANY WAY RELATED TO THIS SOFTWARE WILL NOT EXCEED THE AMOUNT OF FEES, IF ANY,
 * THAT YOU HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
- *******************************************************************************/
-//DOM-IGNORE-END
+*******************************************************************************/
+// DOM-IGNORE-END
 
-#ifndef DEFINITIONS_H
-#define DEFINITIONS_H
+/* Guards against multiple inclusion */
+#ifndef PLIB_EIC_H
+#define PLIB_EIC_H
 
 // *****************************************************************************
 // *****************************************************************************
 // Section: Included Files
 // *****************************************************************************
 // *****************************************************************************
-#include <stdint.h>
-#include <stddef.h>
+
+#include "device.h"
 #include <stdbool.h>
-#include <stdio.h>
-#include "peripheral/sercom/usart/plib_sercom3_usart.h"
-#include "peripheral/nvmctrl/plib_nvmctrl.h"
-#include "peripheral/sercom/i2c_master/plib_sercom2_i2c_master.h"
-#include "peripheral/evsys/plib_evsys.h"
-#include "peripheral/port/plib_port.h"
-#include "peripheral/clock/plib_clock.h"
-#include "peripheral/nvic/plib_nvic.h"
-#include "peripheral/eic/plib_eic.h"
-#include "peripheral/tc/plib_tc3.h"
+#include <stddef.h>
 
 // DOM-IGNORE-BEGIN
-#ifdef __cplusplus  // Provide C++ Compatibility
+#ifdef __cplusplus // Provide C++ Compatibility
 
-extern "C" {
+    extern "C" {
 
 #endif
 // DOM-IGNORE-END
 
-/* CPU clock frequency */
-#define CPU_CLOCK_FREQUENCY 48000000
-
 // *****************************************************************************
 // *****************************************************************************
-// Section: System Functions
+// Section: Data Types
 // *****************************************************************************
 // *****************************************************************************
 
+/* EIC Pin Count */
+#define EXTINT_COUNT                        (16U)
+
+typedef enum
+{
+    EIC_PIN_MAX = 16
+
+} EIC_PIN;
+
+
+
 // *****************************************************************************
-/* System Initialization Function
+// *****************************************************************************
+// Section: Interface Routines
+// *****************************************************************************
+// *****************************************************************************
 
-  Function:
-    void SYS_Initialize( void *data )
+void EIC_Initialize(void);
 
-  Summary:
-    Function that initializes all modules in the system.
 
-  Description:
-    This function initializes all modules in the system, including any drivers,
-    services, middleware, and applications.
 
-  Precondition:
-    None.
+#ifdef __cplusplus // Provide C++ Compatibility
 
-  Parameters:
-    data            - Pointer to the data structure containing any data
-                      necessary to initialize the module. This pointer may
-                      be null if no data is required and default initialization
-                      is to be used.
-
-  Returns:
-    None.
-
-  Example:
-    <code>
-    SYS_Initialize ( NULL );
-
-    while ( true )
-    {
-        SYS_Tasks ( );
     }
-    </code>
 
-  Remarks:
-    This function will only be called once, after system reset.
-*/
-
-void SYS_Initialize( void *data );
-
-/* Nullify SYS_Tasks() if only PLIBs are used. */
-#define     SYS_Tasks()
-
-// *****************************************************************************
-// *****************************************************************************
-// Section: extern declarations
-// *****************************************************************************
-// *****************************************************************************
-
-
-
-
-//DOM-IGNORE-BEGIN
-#ifdef __cplusplus
-}
 #endif
-//DOM-IGNORE-END
 
-#endif /* DEFINITIONS_H */
-/*******************************************************************************
- End of File
-*/
-
+#endif /* PLIB_EIC_H */

@@ -66,6 +66,7 @@ build/default/production/_ext/1360937237/NHD-2.23-12832UCxx.o: \
  ../src/config/default/peripheral/port/plib_port.h \
  ../src/config/default/peripheral/clock/plib_clock.h \
  ../src/config/default/peripheral/nvic/plib_nvic.h \
+ ../src/config/default/peripheral/eic/plib_eic.h \
  ../src/config/default/peripheral/tc/plib_tc3.h \
  ../src/config/default/peripheral/tc/plib_tc_common.h \
  ../src/NHD-2.23-12832UCxx.h
@@ -207,6 +208,8 @@ build/default/production/_ext/1360937237/NHD-2.23-12832UCxx.o: \
 ../src/config/default/peripheral/clock/plib_clock.h:
 
 ../src/config/default/peripheral/nvic/plib_nvic.h:
+
+../src/config/default/peripheral/eic/plib_eic.h:
 
 ../src/config/default/peripheral/tc/plib_tc3.h:
 

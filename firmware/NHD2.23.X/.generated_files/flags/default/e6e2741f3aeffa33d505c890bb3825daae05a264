@@ -35,5 +35,5 @@ MP_AS_DIR="C:\Program Files\Microchip\xc32\v4.10\bin"
 MP_LD_DIR="C:\Program Files\Microchip\xc32\v4.10\bin"
 MP_AR_DIR="C:\Program Files\Microchip\xc32\v4.10\bin"
 # MP_BC_DIR is not defined
-DFP_DIR=C:/Users/cajemian/.mchp_packs/Microchip/SAMD20_DFP/3.6.112
 CMSIS_DIR=C:/Program Files/Microchip/MPLABX/v6.00/packs/arm/CMSIS/5.4.0
+DFP_DIR=C:/Users/cajemian/.mchp_packs/Microchip/SAMD20_DFP/3.6.112

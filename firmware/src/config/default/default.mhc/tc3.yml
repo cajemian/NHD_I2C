@@ -48,7 +48,7 @@ children:
     - type: Values
       children:
       - type: Dynamic
-        attributes: {id: tc3, value: '4687'}
+        attributes: {id: tc3, value: '468'}
   - type: Float
     attributes: {id: TC_TIMER_TIME_MS}
     children:
@@ -61,6 +61,6 @@ children:
     - type: Values
       children:
       - type: User
-        attributes: {value: '100.0'}
+        attributes: {value: '10.0'}
 - type: ElementPosition
-  attributes: {x: '236', y: '124', id: tc3}
+  attributes: {x: '238', y: '124', id: tc3}

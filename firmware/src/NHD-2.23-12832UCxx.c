@@ -46,13 +46,11 @@ static uint8_t writeTxData[APP_TRANSMIT_DATA_LENGTH] =
 
 static uint8_t  testRxData[APP_RECEIVE_DATA_LENGTH];
 
-
-    APP_STATES state = APP_STATE_STATUS_VERIFY;
-    volatile APP_TRANSFER_STATUS transferStatus = APP_TRANSFER_STATUS_ERROR;
-    APP_DATA_SEND sendData = APP_DATA_SETUP;
-    uint8_t ackData = 0;
-    int count = 0;
-    int clearcount = 0;
+APP_STATES state = APP_STATE_STATUS_VERIFY;
+volatile APP_TRANSFER_STATUS transferStatus = APP_TRANSFER_STATUS_ERROR;
+uint8_t ackData = 0;
+int count = 0;
+int clearcount = 0;
 
 /* ************************************************************************** */
 /* ************************************************************************** */
@@ -165,7 +163,7 @@ int I2C(uint8_t type, uint8_t data){
                 }
                 else if (transferStatus == APP_TRANSFER_STATUS_ERROR)
                 {
-                    LED_Set();  //CAA Error
+                    HRTBEAT_LED_Set();  //CAA Error
                     /* EEPROM's internal write cycle is not complete. Keep checking. */
                     transferStatus = APP_TRANSFER_STATUS_IN_PROGRESS;
                     SERCOM2_I2C_Write(APP_AT24MAC_DEVICE_ADDR, &ackData, APP_ACK_DATA_LENGTH);
@@ -195,39 +193,20 @@ int I2C(uint8_t type, uint8_t data){
                 break;
 
             case APP_SETUP:
-                switch(sendData){
-                    //Send all the Setup data
-                    case APP_DATA_SETUP:
-                        commandTxData[1] = setupData[count];
-                        if(count < SETUP_COMMANDS){
-                            count++;
-                            state = APP_STATE_STATUS_VERIFY;
-                        }
-                        else{
-
-                       //     sendData = APP_DATA_CLEAR;                           //Start Drawing on screen
-                        //    count = 0;
-                        }
-                        break;
-                        
-                    case APP_DATA_CLEAR:
-                        break;
-                    case APP_DATA_DRAW:
-                        break;
-                }
+               
                   
                 break;
 
             case APP_STATE_XFER_SUCCESSFUL:
             {
-                LED_Clear();
+                HRTBEAT_LED_Clear();
                 state = APP_STATE_STATUS_VERIFY;
                 return 1;
                 break;
             }
             case APP_STATE_XFER_ERROR:
             {
-                LED_Set();
+                HRTBEAT_LED_Set();
                 return 1;
                 break;
             }
@@ -237,7 +216,48 @@ int I2C(uint8_t type, uint8_t data){
     return 0;
     }
 
+void sendCommand(uint8_t data){
+    int cmdFlg = 0;
+    while(cmdFlg == 0){
+        cmdFlg = I2C('C', data);
+    }
+}
 
+void sendData(uint8_t data){
+    int cmdFlg = 0;
+    while(cmdFlg == 0){
+        cmdFlg = I2C('D', data);
+    }
+}
+
+void setStartPage(uint8_t pageAddr){
+    sendCommand(0xB0 | pageAddr);
+}
+
+void setStartColumn(uint8_t address){
+    sendCommand(0x00 + address % 16);
+    sendCommand(0x10 | address / 16);
+}
+
+void setPageAddress(uint8_t startAddr, uint8_t endAddr)
+{
+  sendCommand(0x22);
+  sendCommand(startAddr);
+  sendCommand(endAddr);
+}
+
+void setColumnAddress(uint8_t startAddr, uint8_t endAddr)
+{
+  sendCommand(0x21);
+  sendCommand(startAddr);
+  sendCommand(endAddr);
+}
+
+void setAddressingMode(uint8_t mode)
+{
+  sendCommand(0x20);
+  sendCommand(mode);
+}
 
 /* ************************************************************************** */
 /* ************************************************************************** */

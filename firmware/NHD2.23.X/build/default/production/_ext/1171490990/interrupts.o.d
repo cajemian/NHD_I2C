@@ -68,6 +68,7 @@ build/default/production/_ext/1171490990/interrupts.o: \
  ../src/config/default/peripheral/port/plib_port.h \
  ../src/config/default/peripheral/clock/plib_clock.h \
  ../src/config/default/peripheral/nvic/plib_nvic.h \
+ ../src/config/default/peripheral/eic/plib_eic.h \
  ../src/config/default/peripheral/tc/plib_tc3.h \
  ../src/config/default/peripheral/tc/plib_tc_common.h
 
@@ -212,6 +213,8 @@ build/default/production/_ext/1171490990/interrupts.o: \
 ../src/config/default/peripheral/clock/plib_clock.h:
 
 ../src/config/default/peripheral/nvic/plib_nvic.h:
+
+../src/config/default/peripheral/eic/plib_eic.h:
 
 ../src/config/default/peripheral/tc/plib_tc3.h:
 

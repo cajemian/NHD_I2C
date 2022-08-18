@@ -66,7 +66,7 @@ extern "C" {
 #define setAreaColor 0xD8
 #define setAreaColor2 0x05
 
-#define setAddressingMode 0x20
+#define setAddressingMode1 0x20
 #define setAddressingMode2 0x02
 #define setSegmentRemap 0xA1
 
@@ -94,12 +94,6 @@ extern "C" {
 
 #define setDisplayON 0xAF
     
-static uint8_t setupData[SETUP_COMMANDS] = {
-    setDisplayClock, RatioFrequency, setMultiplexRation, setMultiplexRation2, setDisplayOffset, setDisplayOffset2,
-    setStartLine, setMasterConfig, setMasterConfig2, setAreaColor, setAreaColor2, setAddressingMode, setAddressingMode2, setSegmentRemap,
-    setComRemap, setComConfig, setComConfig1, setLUT, setLUT1, setLUT1, setLUT1, setLUT1,
-    setContrast, setContrast2, setBrightness, setBrightness2, setPrechargePeriod, setPrechargePeriod2, setVCOMH, setVCOMH2, setEntireDisplay, setInverseDisplay, setDisplayON
-};
 
 
 
@@ -146,107 +140,14 @@ typedef enum
 
 
 int I2C(uint8_t type, uint8_t data);          //returns 0 when in process
-                                //returns 1 when done sending
-//void I2C(APP_STATES state, uint8_t data);
-    
-    // *****************************************************************************
-    // *****************************************************************************
-    // Section: Data Types
-    // *****************************************************************************
-    // *****************************************************************************
-
-    /*  A brief description of a section can be given directly below the section
-        banner.
-     */
-
-
-    // *****************************************************************************
-
-    /** Descriptive Data Type Name
-
-      @Summary
-        Brief one-line summary of the data type.
-    
-      @Description
-        Full description, explaining the purpose and usage of the data type.
-        <p>
-        Additional description in consecutive paragraphs separated by HTML 
-        paragraph breaks, as necessary.
-        <p>
-        Type "JavaDoc" in the "How Do I?" IDE toolbar for more information on tags.
-
-      @Remarks
-        Any additional remarks
-        <p>
-        Describe enumeration elements and structure and union members above each 
-        element or member.
-     */
-
-
-    // *****************************************************************************
-    // *****************************************************************************
-    // Section: Interface Functions
-    // *****************************************************************************
-    // *****************************************************************************
-
-    /*  A brief description of a section can be given directly below the section
-        banner.
-     */
-
-    // *****************************************************************************
-    /**
-      @Function
-        int ExampleFunctionName ( int param1, int param2 ) 
-
-      @Summary
-        Brief one-line description of the function.
-
-      @Description
-        Full description, explaining the purpose and usage of the function.
-        <p>
-        Additional description in consecutive paragraphs separated by HTML 
-        paragraph breaks, as necessary.
-        <p>
-        Type "JavaDoc" in the "How Do I?" IDE toolbar for more information on tags.
-
-      @Precondition
-        List and describe any required preconditions. If there are no preconditions,
-        enter "None."
-
-      @Parameters
-        @param param1 Describe the first parameter to the function.
-    
-        @param param2 Describe the second parameter to the function.
-
-      @Returns
-        List (if feasible) and describe the return values of the function.
-        <ul>
-          <li>1   Indicates an error occurred
-          <li>0   Indicates an error did not occur
-        </ul>
-
-      @Remarks
-        Describe any special behavior not described above.
-        <p>
-        Any additional remarks.
-
-      @Example
-        @code
-        if(ExampleFunctionName(1, 2) == 0)
-        {
-            return 3;
-        }
-     */
-    
-
-
-void Checkerboard_12832();
-void Fill_RAM_12832(uint8_t Data);
-void Set_Start_Page_12832(uint8_t d);
-void Set_Start_Column_12832(uint8_t d);
-void comm_out(uint8_t d);
-void data_out(uint8_t d);
-
+                                                //returns 1 when done sending
+void sendCommand(uint8_t data);
+void sendData(uint8_t data);
+void setStartPage(uint8_t pageAddr);
+void setStartColumn(uint8_t address);
+void setPageAddress(uint8_t startAddr, uint8_t endAddr);
+void setColumnAddress(uint8_t startAddr, uint8_t endAddr);
+void setAddressingMode(uint8_t mode);
     /* Provide C++ Compatibility */
 #ifdef __cplusplus
 }

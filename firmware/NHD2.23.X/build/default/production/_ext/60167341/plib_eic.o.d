@@ -1,7 +1,6 @@
-build/default/debug/_ext/1593096446/plib_nvmctrl.o: \
- ../src/config/default/peripheral/nvmctrl/plib_nvmctrl.c \
- ../src/config/default/interrupts.h \
- ../src/config/default/peripheral/nvmctrl/plib_nvmctrl.h \
+build/default/production/_ext/60167341/plib_eic.o: \
+ ../src/config/default/peripheral/eic/plib_eic.c \
+ ../src/config/default/peripheral/eic/plib_eic.h \
  ../src/config/default/device.h ../src/packs/ATSAMD20J18_DFP/samd20j18.h \
  ../src/packs/CMSIS/CMSIS/Core/Include/core_cm0plus.h \
  ../src/packs/CMSIS/CMSIS/Core/Include/cmsis_version.h \
@@ -58,11 +57,10 @@ build/default/debug/_ext/1593096446/plib_nvmctrl.o: \
  ../src/packs/ATSAMD20J18_DFP/pio/samd20j18.h \
  ../src/config/default/device_cache.h ../src/config/default/device.h \
  ../src/config/default/toolchain_specifics.h \
- ../src/packs/CMSIS/CMSIS/Core/Include/cmsis_compiler.h
+ ../src/packs/CMSIS/CMSIS/Core/Include/cmsis_compiler.h \
+ ../src/config/default/interrupts.h
 
-../src/config/default/interrupts.h:
-
-../src/config/default/peripheral/nvmctrl/plib_nvmctrl.h:
+../src/config/default/peripheral/eic/plib_eic.h:
 
 ../src/config/default/device.h:
 
@@ -181,3 +179,5 @@ build/default/debug/_ext/1593096446/plib_nvmctrl.o: \
 ../src/config/default/toolchain_specifics.h:
 
 ../src/packs/CMSIS/CMSIS/Core/Include/cmsis_compiler.h:
+
+../src/config/default/interrupts.h:
