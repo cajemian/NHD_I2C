@@ -26,6 +26,7 @@
 #include <stdlib.h>                     // Defines EXIT_FAILURE
 #include "definitions.h"                // SYS function prototypes
 #include "NHD-2.23-12832UCxx.h"
+#include "fonts.h"
 
 /* ************************************************************************** */
 /* ************************************************************************** */
@@ -215,6 +216,52 @@ int I2C(uint8_t type, uint8_t data){
         }
     return 0;
     }
+
+//draw just the letter A
+void drawChar(){
+    char ch = 'A';
+    //FontDef Font = Font_7x10;
+    colAddress = 4;
+    pageAddress = 0;
+   // FontDef Font = Font_5x8;
+    
+    //Check if character is valid
+    if(ch < 32 || ch > 126){
+        //return 0;
+    }
+    //TODO Check Remaining space on current line
+    setPageAddress(0,3);
+    for(int i = 0; i< 5; i++){//Font.FontWidth; i++){
+        setColumnAddress(colAddress,131);
+        colAddress++;
+        
+        sendData(Font5x8[i] & 0x00FF);                   //keep lower 8 bits
+        
+    }
+    setPageAddress(1,3);
+    colAddress = 4;
+    for(int i = 0; i< 5; i++){//Font.FontWidth; i++){   //keep higher 8 bits
+        setColumnAddress(colAddress,131);
+        colAddress++;
+        
+        sendData(Font5x8[i] >> 8);
+        
+    }
+    /*for(int i = 0; i < 4; i++){
+        setPageAddress(i, 3);
+        setColumnAddress(4, 10);
+        setAddressingMode(0x00);
+        sendData(0x7C);
+        setColumnAddress(5, 10);
+        sendData(0x12);
+        setColumnAddress(6, 10);
+        sendData(0x11);
+        setColumnAddress(7, 10);
+        sendData(0x12);
+        setColumnAddress(8, 10);
+        sendData(0x7C);
+    }*/
+}
 
 void sendCommand(uint8_t data){
     int cmdFlg = 0;

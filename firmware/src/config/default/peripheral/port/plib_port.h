@@ -73,6 +73,15 @@
 #define NAV_BTN_B_Get()               (((PORT_REGS->GROUP[0].PORT_IN >> 3U)) & 0x01U)
 #define NAV_BTN_B_PIN                  PORT_PIN_PA03
 
+/*** Macros for Reset pin ***/
+#define Reset_Set()               (PORT_REGS->GROUP[1].PORT_OUTSET = ((uint32_t)1U << 6U))
+#define Reset_Clear()             (PORT_REGS->GROUP[1].PORT_OUTCLR = ((uint32_t)1U << 6U))
+#define Reset_Toggle()            (PORT_REGS->GROUP[1].PORT_OUTTGL = ((uint32_t)1U << 6U))
+#define Reset_OutputEnable()      (PORT_REGS->GROUP[1].PORT_DIRSET = ((uint32_t)1U << 6U))
+#define Reset_InputEnable()       (PORT_REGS->GROUP[1].PORT_DIRCLR = ((uint32_t)1U << 6U))
+#define Reset_Get()               (((PORT_REGS->GROUP[1].PORT_IN >> 6U)) & 0x01U)
+#define Reset_PIN                  PORT_PIN_PB06
+
 /*** Macros for SELECT_BTN pin ***/
 #define SELECT_BTN_Set()               (PORT_REGS->GROUP[1].PORT_OUTSET = ((uint32_t)1U << 9U))
 #define SELECT_BTN_Clear()             (PORT_REGS->GROUP[1].PORT_OUTCLR = ((uint32_t)1U << 9U))

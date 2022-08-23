@@ -43,10 +43,14 @@ typedef enum
     DRAW,
     POWERUP,
     IDLE,
+    LETTER,
     STOP
 
 } DISPLAY_STATES;
 
+uint8_t drawLine = 0;
+uint8_t pageAddress = 0;
+uint8_t colAddress = 0;
 
 
 //10ms Interrupt
@@ -74,6 +78,8 @@ int main ( void )
     counter100ms = 0;
     counter1S = 0;
     
+    Reset_Set();
+    
     while(true)
     {   
          /* Maintain state machines of all polled MPLAB Harmony modules. */
@@ -96,6 +102,15 @@ int main ( void )
         if(counter1S >= 10){
             printf("1s\r\n");
             counter1S = 0;
+            drawLine++;
+            if(drawLine >= 0xFF){
+                drawLine = 0;
+            }
+            colAddress++;
+            if(colAddress >= 131){
+                stateMachine = CLEAR;
+                colAddress = 0;
+            }
         }
         
 
@@ -117,7 +132,7 @@ int main ( void )
                             sendData(0x00);
                         }
                     }
-                    stateMachine = DRAW;
+                    stateMachine = LETTER;
                 break;
 
                 case DRAW:
@@ -152,6 +167,8 @@ int main ( void )
                           sendData(IDLEscreen[i]);
                       }
                     stateMachine = STOP;
+                case LETTER:
+                    drawChar();
                     break;
                 case STOP:
                     break;

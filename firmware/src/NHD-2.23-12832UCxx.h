@@ -138,10 +138,14 @@ typedef enum
 #define WHITE 1
 #define Black 0
 
+extern uint8_t pageAddress;
+extern uint8_t colAddress;
+
 
 int I2C(uint8_t type, uint8_t data);          //returns 0 when in process
-                                                //returns 1 when done sending
-void sendCommand(uint8_t data);
+        
+void drawChar();
+void sendCommand(uint8_t data);//returns 1 when done sending
 void sendData(uint8_t data);
 void setStartPage(uint8_t pageAddr);
 void setStartColumn(uint8_t address);
