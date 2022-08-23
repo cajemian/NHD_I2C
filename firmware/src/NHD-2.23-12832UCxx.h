@@ -24,7 +24,6 @@
 /* Section: Included Files                                                    */
 /* ************************************************************************** */
 /* ************************************************************************** */
-
 /* Provide C++ Compatibility */
 #ifdef __cplusplus
 extern "C" {
@@ -39,6 +38,11 @@ extern "C" {
 //define LED_ON()                       LED_Clear()
 //#define LED_OFF()                      LED_Set()
 
+#define SSD1305_HEIGHT                      32
+#define SSD1305_WIDTH                       128
+#define SSD1305_BUFFER_SIZE                 SSD1305_WIDTH * SSD1305_HEIGHT / 8
+    
+    
 #define APP_AT24MAC_DEVICE_ADDR             0x003D
 #define APP_AT24MAC_MEMORY_ADDR             0x00
 #define APP_AT24MAC_MEMORY_ADDR1            0x00
@@ -131,6 +135,12 @@ typedef enum
 
 } APP_DATA_SEND;
 
+typedef struct {
+    uint16_t CurrentX;
+    uint16_t CurrentY;
+    uint8_t Initialized;
+    uint8_t DisplayOn;
+} SSD1306_t;
 
 #define I2C_SLAVE_ADDR 0x3D
     
@@ -141,10 +151,13 @@ typedef enum
 extern uint8_t pageAddress;
 extern uint8_t colAddress;
 
+void ssd1306_DrawPixel(uint8_t x, uint8_t y, int color);
+void ssd1306_WriteChar(char ch);
+void writeData();
 
 int I2C(uint8_t type, uint8_t data);          //returns 0 when in process
-        
-void drawString(char *string, int spacing);
+
+void drawString(int row, int column, char *string, int spacing);
 void drawChar(uint8_t y, char ch);
 void sendCommand(uint8_t data);//returns 1 when done sending
 void sendData(uint8_t data);

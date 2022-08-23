@@ -29,6 +29,7 @@
 #include "NHD-2.23-12832UCxx.h"
 #include "graphics.h"
 
+
 static uint8_t setupData[SETUP_COMMANDS] = {
     setDisplayClock, RatioFrequency, setMultiplexRation, setMultiplexRation2, setDisplayOffset, setDisplayOffset2,
     setStartLine, setMasterConfig, setMasterConfig2, setAreaColor, setAreaColor2, setAddressingMode1, setAddressingMode2, setSegmentRemap,
@@ -44,13 +45,13 @@ typedef enum
     POWERUP,
     IDLE,
     LETTER,
-    STOP
+    STOP,
 
 } DISPLAY_STATES;
 
 uint8_t drawLine = 0;
-uint8_t pageAddress = 0;
-uint8_t colAddress = 0;
+uint8_t pageAddress = 0;        //Page 0 out of 4
+uint8_t colAddress = 4;         //Global address of column pixel, Start with 4
 
 
 //10ms Interrupt
@@ -132,7 +133,7 @@ int main ( void )
                             sendData(0x00);
                         }
                     }
-                    stateMachine = LETTER;
+                    stateMachine = IDLE;
                 break;
 
                 case DRAW:
@@ -141,7 +142,7 @@ int main ( void )
                     setAddressingMode(0x00);
 
                     //write data
-                      for(int i = 0; i < 516; i++){
+                      for(int i = 0; i < 512; i++){
                           sendData(logo[i]);
                       }
                     stateMachine = POWERUP;
@@ -162,15 +163,15 @@ int main ( void )
                     setColumnAddress(4, 131);
                     setAddressingMode(0x00);
 
-                    //write data
-                      for(int i = 0; i < 516; i++){
-                          sendData(IDLEscreen[i]);
-                      }
+                    //ssd1306_WriteChar('A');
+                    //ssd1306_WriteChar('B');
+                    writeData();
+
                     stateMachine = STOP;
-                case LETTER:
-                    colAddress = 4;
-                    char string[] = "ABCDEF01";
-                    drawString(string, 4);
+                case LETTER:;
+                    char string[] = "ABCDEF 0123456789";
+                    drawString(0, 4, string, 4);
+                    writeData();
                     stateMachine = STOP;
                     break;
                 case STOP:

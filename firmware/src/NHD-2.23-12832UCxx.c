@@ -26,15 +26,19 @@
 #include <stdlib.h>                     // Defines EXIT_FAILURE
 #include "definitions.h"                // SYS function prototypes
 #include "NHD-2.23-12832UCxx.h"
-#include "fonts.h"
 #include "string.h"
+#include "fonts.h"
 
 /* ************************************************************************** */
 /* ************************************************************************** */
 /* Section: File Scope or Global Data                                         */
 /* ************************************************************************** */
 /* ************************************************************************** */
+// Screenbuffer
+static uint8_t SSD1305_Buffer[SSD1305_BUFFER_SIZE];
 
+// Screen object
+static SSD1306_t SSD1306;
 
 static uint8_t commandTxData[APP_TRANSMIT_DATA_LENGTH] =
 {
@@ -217,19 +221,82 @@ int I2C(uint8_t type, uint8_t data){
         }
     return 0;
     }
+void writeData(){
+    for(int i = 0; i<512; i++){
+        int cmdFlg = 0;
+        while(cmdFlg == 0){
+            cmdFlg = I2C('D', SSD1305_Buffer[i]);
+        }
+    }
+    
+}
+void ssd1306_DrawPixel(uint8_t x, uint8_t y, int color) {
+    if(x >= SSD1305_WIDTH || y >= SSD1305_HEIGHT) {
+        // Don't write outside the buffer
+        return;
+    }
+   
+    // Draw in the right color
+    if(color == 0) {
+        SSD1305_Buffer[x + (y / 8) * SSD1305_WIDTH] |= 1 << (y % 8);
+    } else { 
+        SSD1305_Buffer[x + (y / 8) * SSD1305_WIDTH] &= ~(1 << (y % 8));
+    }
+}
 
-void drawString(char *string, int spacing){
+// Draw 1 char to the screen buffer
+// ch       => char om weg te schrijven
+// Font     => Font waarmee we gaan schrijven
+// color    => Black or White
+void ssd1306_WriteChar(char ch) {
+    FontDef Font = Font_6x8;
+    int b;
+    //FontDef Font, SSD1306_COLOR color
+    // Check if character is valid
+    if (ch < 32 || ch > 126){
+       
+    }
+      
+    // Check remaining space on current line
+    /*if (SSD1305_WIDTH < (SSD1306.CurrentX + Font.FontWidth) ||
+        SSD1305_HEIGHT < (SSD1306.CurrentY + Font.FontHeight))
+    {
+        // Not enough space on current line
+        return 0;
+    }*/
+    
+    // Use the font to write
+    for(int i = 0; i < Font.FontHeight; i++) {                      //7
+        b = Font.data[(ch - 32) * Font.FontHeight + i];
+        for(int j = 0; j < 6; j++) {                   //10
+            if((b << j) & 0x8000)  {
+                ssd1306_DrawPixel(SSD1306.CurrentX + j, (SSD1306.CurrentY + i), 0);
+            } else {
+                ssd1306_DrawPixel(SSD1306.CurrentX + j, (SSD1306.CurrentY + i), 1);
+            }
+        }
+    }
+    
+    // The current space is now taken
+    SSD1306.CurrentX += Font.FontWidth;
+}
+    
+    
+void drawString(int row, int column, char *string, int spacing){
     int size = strlen(string);           //create a getSize function
+
+    
     for(int i = 0; i < size; i++){
-        drawChar(colAddress + spacing, string[i]);
+        ssd1306_WriteChar(string[i]);
     }
     
 }
 //draw just the letter A
-void drawChar(uint8_t y, char ch){
-    //FontDef Font = Font_7x10;
-    int fontChar = 5*(ch - 32);
-    colAddress = y;
+void drawChar(uint8_t y, char ch){                  //TODO need to use multiple lines for text
+    //FontDef Font = Font_7x10;                     //TODO need to check if the screen is out of room
+    int fontChar = 5*(ch - 32);                     //get char in Font array
+    if(y )
+    colAddress = y;                                 //Address to start at
     pageAddress = 0;
    // FontDef Font = Font_5x8;
     
@@ -238,37 +305,25 @@ void drawChar(uint8_t y, char ch){
         //return 0;
     }
     //TODO Check Remaining space on current line
-    setPageAddress(0,3);
+    //Upper Bits
+    setPageAddress(pageAddress,3);
     for(int i = 0; i< 5; i++){//Font.FontWidth; i++){
-        setColumnAddress(colAddress,131);
+        setColumnAddress(colAddress,127);
         colAddress++;
         
         sendData(Font5x8[i + fontChar] & 0x00FF);                   //keep lower 8 bits
         
     }
-    setPageAddress(1,3);
+    //Lower Bits
+    setPageAddress(pageAddress + 1,3);
     colAddress = y;
     for(int i = 0; i< 5; i++){//Font.FontWidth; i++){   //keep higher 8 bits
-        setColumnAddress(colAddress,131);
+        setColumnAddress(colAddress,127);
         colAddress++;
         
         sendData(Font5x8[i + fontChar] >> 8);
         
     }
-    /*for(int i = 0; i < 4; i++){
-        setPageAddress(i, 3);
-        setColumnAddress(4, 10);
-        setAddressingMode(0x00);
-        sendData(0x7C);
-        setColumnAddress(5, 10);
-        sendData(0x12);
-        setColumnAddress(6, 10);
-        sendData(0x11);
-        setColumnAddress(7, 10);
-        sendData(0x12);
-        setColumnAddress(8, 10);
-        sendData(0x7C);
-    }*/
 }
 
 void sendCommand(uint8_t data){
