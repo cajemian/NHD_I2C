@@ -282,7 +282,7 @@ void ssd1306_WriteChar(char ch) {
 }
     
     
-void drawString(int row, int column, char *string, int spacing){
+void drawString(char *string){
     int size = strlen(string);           //create a getSize function
 
     
@@ -291,6 +291,50 @@ void drawString(int row, int column, char *string, int spacing){
     }
     
 }
+
+// Position the cursor
+void ssd1306_SetCursor(uint8_t x, uint8_t y) {
+    SSD1306.CurrentX = x;
+    SSD1306.CurrentY = y;
+}
+
+// Draw line by Bresenhem's algorithm
+void ssd1306_Line(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2, int color) {
+  int32_t deltaX = abs(x2 - x1);
+  int32_t deltaY = abs(y2 - y1);
+  int32_t signX = ((x1 < x2) ? 1 : -1);
+  int32_t signY = ((y1 < y2) ? 1 : -1);
+  int32_t error = deltaX - deltaY;
+  int32_t error2;
+    
+  ssd1306_DrawPixel(x2, y2, color);
+    while((x1 != x2) || (y1 != y2))
+    {
+    ssd1306_DrawPixel(x1, y1, color);
+    error2 = error * 2;
+    if(error2 > -deltaY)
+    {
+      error -= deltaY;
+      x1 += signX;
+    }
+    else
+    {
+    /*nothing to do*/
+    }
+        
+    if(error2 < deltaX)
+    {
+      error += deltaX;
+      y1 += signY;
+    }
+    else
+    {
+    /*nothing to do*/
+    }
+  }
+  return;
+}
+
 //draw just the letter A
 void drawChar(uint8_t y, char ch){                  //TODO need to use multiple lines for text
     //FontDef Font = Font_7x10;                     //TODO need to check if the screen is out of room

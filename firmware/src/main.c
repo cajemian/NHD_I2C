@@ -43,7 +43,6 @@ typedef enum
     CLEAR,
     DRAW,
     POWERUP,
-    IDLE,
     LETTER,
     STOP,
 
@@ -101,17 +100,7 @@ int main ( void )
         }
         
         if(counter1S >= 10){
-            printf("1s\r\n");
-            counter1S = 0;
-            drawLine++;
-            if(drawLine >= 0xFF){
-                drawLine = 0;
-            }
-            colAddress++;
-            if(colAddress >= 131){
-                stateMachine = CLEAR;
-                colAddress = 0;
-            }
+
         }
         
 
@@ -124,6 +113,7 @@ int main ( void )
                 break;
 
                 case CLEAR:
+
                     for(int i = 0; i < 4; i++){
 
                         setStartPage(i);
@@ -133,12 +123,12 @@ int main ( void )
                             sendData(0x00);
                         }
                     }
-                    stateMachine = IDLE;
+                    stateMachine = LETTER;
                 break;
 
                 case DRAW:
                     setPageAddress(0, 3);
-                    setColumnAddress(4, 131);
+                    setColumnAddress(0, 128);
                     setAddressingMode(0x00);
 
                     //write data
@@ -156,25 +146,32 @@ int main ( void )
                       for(int i = 0; i < 516; i++){
                           sendData(PowerUp[i]);
                       }
-                    stateMachine = IDLE;
+                    stateMachine = STOP;
                     break;
-                case IDLE:
+                case LETTER:
                     setPageAddress(0, 3);
                     setColumnAddress(4, 131);
                     setAddressingMode(0x00);
+                    ssd1306_SetCursor(0,0);
+                    char string[] = "  POD-4|5 CATH-70|99";
+                    
+                    drawString(string);
+                    ssd1306_Line(0,10,127,10,0);
+                    
+                    ssd1306_SetCursor(0,14);
+                    char string1[]= "REPROCESSED 7|06|2022";
+                    drawString(string1);
+                    
+                    ssd1306_SetCursor(0,24);
+                    char string2[]= "   [RUN CYLE]  MENU";
+                    drawString(string2);
 
-                    //ssd1306_WriteChar('A');
-                    //ssd1306_WriteChar('B');
-                    writeData();
-
-                    stateMachine = STOP;
-                case LETTER:;
-                    char string[] = "ABCDEF 0123456789";
-                    drawString(0, 4, string, 4);
                     writeData();
                     stateMachine = STOP;
                     break;
                 case STOP:
+                    break;
+                default:
                     break;
             }
         }

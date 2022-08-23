@@ -157,7 +157,10 @@ void writeData();
 
 int I2C(uint8_t type, uint8_t data);          //returns 0 when in process
 
-void drawString(int row, int column, char *string, int spacing);
+void drawString(char *string);
+void ssd1306_Line(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2, int color);
+void ssd1306_SetCursor(uint8_t x, uint8_t y);
+
 void drawChar(uint8_t y, char ch);
 void sendCommand(uint8_t data);//returns 1 when done sending
 void sendData(uint8_t data);
