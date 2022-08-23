@@ -27,6 +27,7 @@
 #include "definitions.h"                // SYS function prototypes
 #include "NHD-2.23-12832UCxx.h"
 #include "fonts.h"
+#include "string.h"
 
 /* ************************************************************************** */
 /* ************************************************************************** */
@@ -217,11 +218,18 @@ int I2C(uint8_t type, uint8_t data){
     return 0;
     }
 
+void drawString(char *string, int spacing){
+    int size = strlen(string);           //create a getSize function
+    for(int i = 0; i < size; i++){
+        drawChar(colAddress + spacing, string[i]);
+    }
+    
+}
 //draw just the letter A
-void drawChar(){
-    char ch = 'A';
+void drawChar(uint8_t y, char ch){
     //FontDef Font = Font_7x10;
-    colAddress = 4;
+    int fontChar = 5*(ch - 32);
+    colAddress = y;
     pageAddress = 0;
    // FontDef Font = Font_5x8;
     
@@ -235,16 +243,16 @@ void drawChar(){
         setColumnAddress(colAddress,131);
         colAddress++;
         
-        sendData(Font5x8[i] & 0x00FF);                   //keep lower 8 bits
+        sendData(Font5x8[i + fontChar] & 0x00FF);                   //keep lower 8 bits
         
     }
     setPageAddress(1,3);
-    colAddress = 4;
+    colAddress = y;
     for(int i = 0; i< 5; i++){//Font.FontWidth; i++){   //keep higher 8 bits
         setColumnAddress(colAddress,131);
         colAddress++;
         
-        sendData(Font5x8[i] >> 8);
+        sendData(Font5x8[i + fontChar] >> 8);
         
     }
     /*for(int i = 0; i < 4; i++){

@@ -168,7 +168,10 @@ int main ( void )
                       }
                     stateMachine = STOP;
                 case LETTER:
-                    drawChar();
+                    colAddress = 4;
+                    char string[] = "ABCDEF01";
+                    drawString(string, 4);
+                    stateMachine = STOP;
                     break;
                 case STOP:
                     break;

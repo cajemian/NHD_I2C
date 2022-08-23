@@ -144,7 +144,8 @@ extern uint8_t colAddress;
 
 int I2C(uint8_t type, uint8_t data);          //returns 0 when in process
         
-void drawChar();
+void drawString(char *string, int spacing);
+void drawChar(uint8_t y, char ch);
 void sendCommand(uint8_t data);//returns 1 when done sending
 void sendData(uint8_t data);
 void setStartPage(uint8_t pageAddr);
