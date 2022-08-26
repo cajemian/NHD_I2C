@@ -15,8 +15,8 @@
  */
 /* ************************************************************************** */
 
-#ifndef _EXAMPLE_FILE_NAME_H    /* Guard against multiple inclusion */
-#define _EXAMPLE_FILE_NAME_H
+#ifndef _GRAPHICS_H    /* Guard against multiple inclusion */
+#define _GRAPHICS_H
 
 
 /* ************************************************************************** */
@@ -45,6 +45,11 @@ extern "C" {
 int counter10ms;
 int counter100ms;
 int counter1S;
+
+char off []  = "OFF";
+char pwrUp[] = "POWER UP";
+char ABCs[] = "ABCDEFGHIJK";
+char nums[] = "0123456789";
 
 uint8_t logo[512] = {
 0xFF, 0xFF, 0xEF, 0xEF, 0x0F, 0xEF, 0xEF, 0xEF, 0x7F, 0xBF, 0xBF, 0x7F, 0xFF, 0xFF, 0x3F, 0xBF,

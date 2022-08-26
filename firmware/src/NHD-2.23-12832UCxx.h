@@ -156,7 +156,7 @@ void ssd1306_WriteChar(char ch);
 void writeData();
 
 int I2C(uint8_t type, uint8_t data);          //returns 0 when in process
-
+void ssd1306_Fill();
 void drawString(char *string);
 void ssd1306_Line(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2, int color);
 void ssd1306_SetCursor(uint8_t x, uint8_t y);
@@ -169,6 +169,7 @@ void setStartColumn(uint8_t address);
 void setPageAddress(uint8_t startAddr, uint8_t endAddr);
 void setColumnAddress(uint8_t startAddr, uint8_t endAddr);
 void setAddressingMode(uint8_t mode);
+
     /* Provide C++ Compatibility */
 #ifdef __cplusplus
 }

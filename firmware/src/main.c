@@ -44,6 +44,7 @@ typedef enum
     DRAW,
     POWERUP,
     LETTER,
+    ABC,
     STOP,
 
 } DISPLAY_STATES;
@@ -58,6 +59,9 @@ void TC3_Callback_InterruptHandler(TC_TIMER_STATUS status, uintptr_t context)
 {   //TODO Change to 10ms and toggle Valves
     /* Toggle LED, Visible Tick */     
     counter10ms++; 
+    //LED_YEL_Toggle();
+    HRTBEAT_LED_Toggle();
+
 
 }
 
@@ -78,31 +82,41 @@ int main ( void )
     counter100ms = 0;
     counter1S = 0;
     
+    HRTBEAT_LED_Set();
+    
     Reset_Set();
+    
+    I2C_Reset_Set();
     
     while(true)
     {   
          /* Maintain state machines of all polled MPLAB Harmony modules. */
         SYS_Tasks ( );
         
+         //printf("get input from pin\r\n");
+        //printf("%ld", CASE_MISS_Get());
+        if(CASE_MISS_Get() == 1){
+            //printf("CASE MISSING Toggle LED");
+            LED_YEL_Toggle();
+            stateMachine++;
+            printf("State == %d\r\n", stateMachine);
+        }
+         
         if(counter10ms >= 1){
             //printf("10ms");
             counter10ms = 0;
-            counter100ms++;        //count to 1S
-              
+            counter100ms++;        //count to 1S    
         }
         
         if(counter100ms >= 10){
             printf("100ms");
             counter100ms = 0;
-            counter1S++;        //count to 1S
-            
+            counter1S++;        //count to 1S   
         }
         
         if(counter1S >= 10){
 
         }
-        
 
             switch(stateMachine){
                 case SETUP:
@@ -112,68 +126,77 @@ int main ( void )
                     stateMachine = CLEAR;
                 break;
 
-                case CLEAR:
+                case CLEAR: //  TODO Cannot figure out how to clear screen after written to it
+                    setPageAddress(0, 3);
+                    setColumnAddress(4, 131);
+                    setAddressingMode(0x00);
+                    ssd1306_SetCursor(0,1);
+                    ssd1306_Fill();
+                    writeData();
 
-                    for(int i = 0; i < 4; i++){
 
-                        setStartPage(i);
-                        setStartColumn(4);
-
-                        for(int i = 0; i < 132; i++){
-                            sendData(0x00);
-                        }
-                    }
-                    stateMachine = LETTER;
+                    //stateMachine = DRAW;
                 break;
 
                 case DRAW:
                     setPageAddress(0, 3);
-                    setColumnAddress(0, 128);
+                    setColumnAddress(4, 131);
                     setAddressingMode(0x00);
+                    ssd1306_SetCursor(20,10);
+                    ssd1306_Fill();
+                    //char ABCs[] = "ABCDEFGHIJKL";
+                    
+                    drawString(off);
 
-                    //write data
-                      for(int i = 0; i < 512; i++){
-                          sendData(logo[i]);
-                      }
-                    stateMachine = POWERUP;
-
+                    writeData();
+                    //stateMachine = POWERUP;
+                    break;
                 case POWERUP:
                     setPageAddress(0, 3);
                     setColumnAddress(4, 131);
                     setAddressingMode(0x00);
+                    ssd1306_Fill();
+                    
+                    ssd1306_SetCursor(0,10);
+                    //char ABCs2[] = "MNOPQRSTUVW";
+                    drawString(pwrUp);
 
-                    //write data
-                      for(int i = 0; i < 516; i++){
-                          sendData(PowerUp[i]);
-                      }
-                    stateMachine = STOP;
+                    writeData();
+                    //stateMachine = LETTER;
                     break;
                 case LETTER:
                     setPageAddress(0, 3);
                     setColumnAddress(4, 131);
                     setAddressingMode(0x00);
-                    ssd1306_SetCursor(0,0);
-                    char string[] = "  POD-4|5 CATH-70|99";
+                    ssd1306_SetCursor(0,1);
+                    ssd1306_Fill();
                     
-                    drawString(string);
-                    ssd1306_Line(0,10,127,10,0);
-                    
-                    ssd1306_SetCursor(0,14);
-                    char string1[]= "REPROCESSED 7|06|2022";
-                    drawString(string1);
-                    
-                    ssd1306_SetCursor(0,24);
-                    char string2[]= "   [RUN CYLE]  MENU";
-                    drawString(string2);
+                    ssd1306_SetCursor(0,19);
+                    drawString(nums);
 
                     writeData();
-                    stateMachine = STOP;
+                    //stateMachine = ABC;
+                    break;
+                case ABC:
+                    setPageAddress(0, 3);
+                    setColumnAddress(4, 131);
+                    setAddressingMode(0x00);
+                    
+                    ssd1306_SetCursor(30,19);
+                    ssd1306_Fill();
+                    drawString(ABCs);
+
+                    writeData();
+                    //stateMachine = STOP;
                     break;
                 case STOP:
+                    stateMachine = CLEAR;
                     break;
                 default:
+                    stateMachine = CLEAR;
                     break;
             }
+        
         }
     
 

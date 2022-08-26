@@ -221,6 +221,7 @@ int I2C(uint8_t type, uint8_t data){
         }
     return 0;
     }
+
 void writeData(){
     for(int i = 0; i<512; i++){
         int cmdFlg = 0;
@@ -249,7 +250,7 @@ void ssd1306_DrawPixel(uint8_t x, uint8_t y, int color) {
 // Font     => Font waarmee we gaan schrijven
 // color    => Black or White
 void ssd1306_WriteChar(char ch) {
-    FontDef Font = Font_6x8;
+    FontDef Font = Font_5x7;
     int b;
     //FontDef Font, SSD1306_COLOR color
     // Check if character is valid
@@ -258,17 +259,17 @@ void ssd1306_WriteChar(char ch) {
     }
       
     // Check remaining space on current line
-    /*if (SSD1305_WIDTH < (SSD1306.CurrentX + Font.FontWidth) ||
+    if (SSD1305_WIDTH < (SSD1306.CurrentX + Font.FontWidth) ||
         SSD1305_HEIGHT < (SSD1306.CurrentY + Font.FontHeight))
     {
         // Not enough space on current line
-        return 0;
-    }*/
+        return;
+    }
     
     // Use the font to write
     for(int i = 0; i < Font.FontHeight; i++) {                      //7
         b = Font.data[(ch - 32) * Font.FontHeight + i];
-        for(int j = 0; j < 6; j++) {                   //10
+        for(int j = 0; j < Font.FontWidth; j++) {                   //10
             if((b << j) & 0x8000)  {
                 ssd1306_DrawPixel(SSD1306.CurrentX + j, (SSD1306.CurrentY + i), 0);
             } else {
@@ -281,7 +282,15 @@ void ssd1306_WriteChar(char ch) {
     SSD1306.CurrentX += Font.FontWidth;
 }
     
-    
+// Fill the whole screen with the given color
+void ssd1306_Fill() {
+    /* Set memory */
+    uint32_t i;
+    for(i = 0; i < sizeof(SSD1305_Buffer); i++) {
+        SSD1305_Buffer[i] = 0x00;
+    }
+}
+
 void drawString(char *string){
     int size = strlen(string);           //create a getSize function
 

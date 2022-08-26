@@ -100,6 +100,15 @@
 #define LED_BLU_Get()               (((PORT_REGS->GROUP[0].PORT_IN >> 10U)) & 0x01U)
 #define LED_BLU_PIN                  PORT_PIN_PA10
 
+/*** Macros for I2C_Reset pin ***/
+#define I2C_Reset_Set()               (PORT_REGS->GROUP[0].PORT_OUTSET = ((uint32_t)1U << 11U))
+#define I2C_Reset_Clear()             (PORT_REGS->GROUP[0].PORT_OUTCLR = ((uint32_t)1U << 11U))
+#define I2C_Reset_Toggle()            (PORT_REGS->GROUP[0].PORT_OUTTGL = ((uint32_t)1U << 11U))
+#define I2C_Reset_OutputEnable()      (PORT_REGS->GROUP[0].PORT_DIRSET = ((uint32_t)1U << 11U))
+#define I2C_Reset_InputEnable()       (PORT_REGS->GROUP[0].PORT_DIRCLR = ((uint32_t)1U << 11U))
+#define I2C_Reset_Get()               (((PORT_REGS->GROUP[0].PORT_IN >> 11U)) & 0x01U)
+#define I2C_Reset_PIN                  PORT_PIN_PA11
+
 /*** Macros for LED_GRN pin ***/
 #define LED_GRN_Set()               (PORT_REGS->GROUP[1].PORT_OUTSET = ((uint32_t)1U << 10U))
 #define LED_GRN_Clear()             (PORT_REGS->GROUP[1].PORT_OUTCLR = ((uint32_t)1U << 10U))
@@ -150,6 +159,11 @@
 #define POD_MISS_PIN                  PORT_PIN_PB17
 
 /*** Macros for CASE_MISS pin ***/
+#define CASE_MISS_Set()               (PORT_REGS->GROUP[0].PORT_OUTSET = ((uint32_t)1U << 20U))
+#define CASE_MISS_Clear()             (PORT_REGS->GROUP[0].PORT_OUTCLR = ((uint32_t)1U << 20U))
+#define CASE_MISS_Toggle()            (PORT_REGS->GROUP[0].PORT_OUTTGL = ((uint32_t)1U << 20U))
+#define CASE_MISS_OutputEnable()      (PORT_REGS->GROUP[0].PORT_DIRSET = ((uint32_t)1U << 20U))
+#define CASE_MISS_InputEnable()       (PORT_REGS->GROUP[0].PORT_DIRCLR = ((uint32_t)1U << 20U))
 #define CASE_MISS_Get()               (((PORT_REGS->GROUP[0].PORT_IN >> 20U)) & 0x01U)
 #define CASE_MISS_PIN                  PORT_PIN_PA20
 
