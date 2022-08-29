@@ -37,8 +37,17 @@
 // Screenbuffer
 static uint8_t SSD1305_Buffer[SSD1305_BUFFER_SIZE];
 
+static uint8_t setupData[SETUP_COMMANDS] = {
+    setDisplayClock, RatioFrequency, setMultiplexRation, setMultiplexRation2, setDisplayOffset, setDisplayOffset2,
+    setStartLine, setMasterConfig, setMasterConfig2, setAreaColor, setAreaColor2, setAddressingMode1, setAddressingMode2, setSegmentRemap,
+    setComRemap, setComConfig, setComConfig1, setLUT, setLUT1, setLUT1, setLUT1, setLUT1,
+    setContrast, setContrast2, setBrightness, setBrightness2, setPrechargePeriod, setPrechargePeriod2, setVCOMH, setVCOMH2, setEntireDisplay, setInverseDisplay, setDisplayON
+};
+
 // Screen object
 static SSD1306_t SSD1306;
+COORDINATES runRect = {18, 17, 65, 27};
+COORDINATES menuRect = {68, 17, 90, 27};
 
 static uint8_t commandTxData[APP_TRANSMIT_DATA_LENGTH] =
 {
@@ -53,6 +62,7 @@ static uint8_t writeTxData[APP_TRANSMIT_DATA_LENGTH] =
 static uint8_t  testRxData[APP_RECEIVE_DATA_LENGTH];
 
 APP_STATES state = APP_STATE_STATUS_VERIFY;
+//DISPLAY_STATES  stateMachine = SETUP;
 volatile APP_TRANSFER_STATUS transferStatus = APP_TRANSFER_STATUS_ERROR;
 uint8_t ackData = 0;
 int count = 0;
@@ -205,14 +215,14 @@ int I2C(uint8_t type, uint8_t data){
 
             case APP_STATE_XFER_SUCCESSFUL:
             {
-                HRTBEAT_LED_Clear();
+                //HRTBEAT_LED_Clear();
                 state = APP_STATE_STATUS_VERIFY;
                 return 1;
                 break;
             }
             case APP_STATE_XFER_ERROR:
             {
-                HRTBEAT_LED_Set();
+                //HRTBEAT_LED_Set();
                 return 1;
                 break;
             }
@@ -221,6 +231,107 @@ int I2C(uint8_t type, uint8_t data){
         }
     return 0;
     }
+
+void stateMachineLoop(DISPLAY_STATES  stateMachine, int flag){
+    switch(stateMachine){
+        case SETUP:
+            for(int i = 0; i < SETUP_COMMANDS; i++){
+                sendCommand(setupData[i]);
+            }
+            stateMachine = CLEAR;
+        break;
+
+        case CLEAR: //  TODO Cannot figure out how to clear screen after written to it
+            setPageAddress(0, 3);
+            setColumnAddress(4, 131);
+            setAddressingMode(0x00);
+            ssd1306_SetCursor(0,1);
+            ssd1306_Fill();
+            writeData();
+
+
+            //stateMachine = DRAW;
+        break;
+
+        case DRAW:
+            setPageAddress(0, 3);
+            setColumnAddress(4, 131);
+            setAddressingMode(0x00);
+            ssd1306_SetCursor(20,10);
+            ssd1306_Fill();
+            //char ABCs[] = "ABCDEFGHIJKL";
+
+            drawString(off);
+
+            writeData();
+            //stateMachine = POWERUP;
+            break;
+        case POWERUP:
+            setPageAddress(0, 3);
+            setColumnAddress(4, 131);
+            setAddressingMode(0x00);
+            ssd1306_Fill();
+
+            ssd1306_SetCursor(0,10);
+            //char ABCs2[] = "MNOPQRSTUVW";
+            drawString(pwrUp);
+
+            writeData();
+            //stateMachine = LETTER;
+            break;
+        case LETTER:
+            setPageAddress(0, 3);
+            setColumnAddress(4, 131);
+            setAddressingMode(0x00);
+            ssd1306_SetCursor(0,1);
+            ssd1306_Fill();
+
+            ssd1306_SetCursor(0,19);
+            drawString(nums);
+
+            writeData();
+            //stateMachine = ABC;
+            break;
+        case ABC:
+            setPageAddress(0, 3);
+            setColumnAddress(4, 131);
+            setAddressingMode(0x00);
+
+            ssd1306_SetCursor(30,19);
+            ssd1306_Fill();
+            drawString(ABCs);
+
+            writeData();
+            //stateMachine = STOP;
+            break;
+        case RUNCYCLE:
+            setPageAddress(0, 3);
+            setColumnAddress(4, 131);
+            setAddressingMode(0x00);
+
+            ssd1306_SetCursor(20,19);
+            ssd1306_Fill();
+            drawString(runCycle);
+            if(flag == 0){
+                ssd1306_DrawRectangle(runRect);
+            }
+            else{
+                ssd1306_DrawRectangle(menuRect);
+            }
+            ssd1306_SetCursor(70,19);
+            drawString(menu);
+
+            writeData();
+            break;
+        case STOP:
+            stateMachine = CLEAR;
+            break;
+        default:
+            stateMachine = CLEAR;
+            break;
+    }
+        
+}
 
 void writeData(){
     for(int i = 0; i<512; i++){
@@ -307,19 +418,28 @@ void ssd1306_SetCursor(uint8_t x, uint8_t y) {
     SSD1306.CurrentY = y;
 }
 
+void ssd1306_DrawRectangle(COORDINATES coordinates) {
+  ssd1306_Line(coordinates.x1,coordinates.y1,coordinates.x2,coordinates.y1);
+  ssd1306_Line(coordinates.x2,coordinates.y1,coordinates.x2,coordinates.y2);
+  ssd1306_Line(coordinates.x2,coordinates.y2,coordinates.x1,coordinates.y2);
+  ssd1306_Line(coordinates.x1,coordinates.y2,coordinates.x1,coordinates.y1);
+
+  return;
+}
+
 // Draw line by Bresenhem's algorithm
-void ssd1306_Line(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2, int color) {
+void ssd1306_Line(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2) {
   int32_t deltaX = abs(x2 - x1);
   int32_t deltaY = abs(y2 - y1);
   int32_t signX = ((x1 < x2) ? 1 : -1);
   int32_t signY = ((y1 < y2) ? 1 : -1);
   int32_t error = deltaX - deltaY;
   int32_t error2;
-    
-  ssd1306_DrawPixel(x2, y2, color);
+  
+  ssd1306_DrawPixel(x2, y2, 0);
     while((x1 != x2) || (y1 != y2))
     {
-    ssd1306_DrawPixel(x1, y1, color);
+    ssd1306_DrawPixel(x1, y1, 0);
     error2 = error * 2;
     if(error2 > -deltaY)
     {

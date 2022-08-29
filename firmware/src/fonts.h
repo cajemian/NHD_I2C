@@ -46,7 +46,16 @@ extern "C" {
     // Section: Data Types
     // *****************************************************************************
     // *****************************************************************************
-   
+char off []  = "OFF";
+char pwrUp[] = "POWER UP";
+char ABCs[] = "ABCDEFGHIJK";
+char nums[] = "0123456789";
+char runCycle[] = "RUN CYCLE";
+char menu[] = "MENU";
+
+
+
+
 //Subtract by 32 to find your character
 uint16_t Font5x8 [600] = {
     0x0000, 0x0000, 0x0000, 0x0000, 0x0000,       //Space 32

@@ -98,7 +98,18 @@ extern "C" {
 
 #define setDisplayON 0xAF
     
+typedef enum
+{
+    SETUP,
+    CLEAR,
+    DRAW,
+    POWERUP,
+    LETTER,
+    ABC,
+    RUNCYCLE,
+    STOP,
 
+} DISPLAY_STATES;
 
 
 typedef enum
@@ -142,6 +153,13 @@ typedef struct {
     uint8_t DisplayOn;
 } SSD1306_t;
 
+typedef struct {
+	uint8_t x1;    
+	uint8_t y1;   
+    uint8_t x2;
+    uint8_t y2;
+} COORDINATES;
+
 #define I2C_SLAVE_ADDR 0x3D
     
 
@@ -156,9 +174,11 @@ void ssd1306_WriteChar(char ch);
 void writeData();
 
 int I2C(uint8_t type, uint8_t data);          //returns 0 when in process
+void stateMachineLoop(DISPLAY_STATES  stateMachine, int flag);
 void ssd1306_Fill();
 void drawString(char *string);
-void ssd1306_Line(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2, int color);
+void ssd1306_DrawRectangle(COORDINATES coordinates);
+void ssd1306_Line(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2);
 void ssd1306_SetCursor(uint8_t x, uint8_t y);
 
 void drawChar(uint8_t y, char ch);

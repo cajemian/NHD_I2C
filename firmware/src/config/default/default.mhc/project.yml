@@ -90,13 +90,13 @@ files:
   security: NON_SECURE
   type: SOURCE
   userChecksum: 118681FDFB490D3D6E5EE5D062F6D8A5
-- generatedChecksum: 241C06AAECC7AE342881F6E6372C1545
+- generatedChecksum: 8CA8E5975768FBCCF0D4DD98F025AF14
   logicalPath: config/default/peripheral/tc
   name: plib_tc3.c
   physicalPath: peripheral/tc
   security: NON_SECURE
   type: SOURCE
-  userChecksum: 241C06AAECC7AE342881F6E6372C1545
+  userChecksum: 8CA8E5975768FBCCF0D4DD98F025AF14
 - generatedChecksum: 2645E564BD945DAED1424FD8D7B39330
   logicalPath: config/default
   name: startup_xc32.c
