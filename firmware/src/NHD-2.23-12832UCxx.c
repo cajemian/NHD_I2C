@@ -277,11 +277,9 @@ void stateMachineLoop(DISPLAY_STATES  screenState){
             ssd1305_Fill();
 
             ssd1305_SetCursor(0,10);
-            //char ABCs2[] = "MNOPQRSTUVW";
             drawString(pwrUp, 0);
 
             writeData();
-            //screenState = LETTER;
             break;
             
         case ABC:
@@ -293,10 +291,7 @@ void stateMachineLoop(DISPLAY_STATES  screenState){
             ssd1305_Fill();
             
             drawString(ABCs, 0);        // A-M
-            ssd1305_SetCursor(66,0);  
-            drawString(ABCs2, 0);        //N-W
-            ssd1305_SetCursor(117,0);
-            drawString(ABCs3, 0);        //XY
+            ssd1305_SetCursor(66,0);
             
             ssd1305_SetCursor(0,9);
             drawString(nums, 0);
@@ -308,31 +303,34 @@ void stateMachineLoop(DISPLAY_STATES  screenState){
             setColumnAddress(4, 131);
             setAddressingMode(0x00);
             ssd1305_Fill();
-            
+           
             ssd1305_SetCursor(0,0);
-            drawString(battery,0);
+            drawString(battery,0);      //Battery Symbols
+
+            ssd1305_SetCursor(32,1);
+            drawString(pod,0);          //POD-x|x
             
-            ssd1305_SetCursor(78,0);
-            drawString(cath,0);
+            ssd1305_SetCursor(81,1);
+            drawString(cath,0);         //CATH-xx|xx
             
-            ssd1305_SetCursor(35,0);
-            drawString(pod,0);
-            
-            ssd1305_Line(0,9,127,9, 0);
-            
-            ssd1305_SetCursor(0,11);
-            drawString(rep,0);
-            ssd1305_SetCursor(106,11);
+            ssd1305_SetCursor(0,13);
+            drawString(rep,0);          //REPROCESSED-xx|xx|xxxx xx:xx
+            ssd1305_SetCursor(106,13);
             drawString(time,0);
             
-            ssd1305_SetCursor(20,21);
+            ssd1305_SetCursor(15,23);
+            drawString(runCycle, 1);    //RUN CYCLE
             
-            drawString(runCycle, 1);
+            ssd1305_SetCursor(91, 23);  
+            drawString(menu, 0);        //MENU
+
+            //Shapes & Lines
             ssd1305_DrawRectangle(runRect, 0);
-            ssd1305_SetCursor(74, 21);
-            drawString(menu1, 0);
-            ssd1305_SetCursor(80,21);
-            drawString(menu2, 0);
+            ssd1305_Line(podLine.x1, podLine.y1, podLine.x2, podLine.y2, 0);   //Divider
+            ssd1305_Line(cathLine.x1, cathLine.y1, cathLine.x2, cathLine.y2, 0);   //Divider
+            ssd1305_Line(horizontalLine.x1, horizontalLine.y1, horizontalLine.x2, horizontalLine.y2, 0);   //Horizontal Line
+            ssd1305_Line(monthLine.x1, monthLine.y1, monthLine.x2, monthLine.y2, 0);   //Divider
+            ssd1305_Line(yearLine.x1, yearLine.y1, yearLine.x2, yearLine.y2, 0);   //Divider
             
             writeData();
             break;
@@ -341,34 +339,32 @@ void stateMachineLoop(DISPLAY_STATES  screenState){
             setColumnAddress(4, 131);
             setAddressingMode(0x00);
             ssd1305_Fill();
-            
+
             ssd1305_SetCursor(0,0);
-            drawString(battery,0);
-            
-            ssd1305_SetCursor(78,0);
+            drawString(battery,0);      //Battery Symbols
 
-            drawString(cath,0);
-            ssd1305_SetCursor(35,0);
-
-            drawString(pod,0);
+            ssd1305_SetCursor(32,1);
+            drawString(pod,0);          //POD-x|x
             
-            ssd1305_Line(0,9,127,9, 0);
+            ssd1305_SetCursor(81,1);
+            drawString(cath,0);         //CATH-xx|xx
             
-            ssd1305_SetCursor(0,11);
-            drawString(rep,0);
-            ssd1305_SetCursor(106,11);
+            ssd1305_SetCursor(0,13);
+            drawString(rep,0);          //REPROCESSED-xx|xx|xxxx xx:xx
+            ssd1305_SetCursor(106,13);
             drawString(time,0);
             
-            ssd1305_SetCursor(20,21);
+            ssd1305_SetCursor(15,23);
+            drawString(runCycle, 0);    //RUN CYCLE
+            
+            ssd1305_SetCursor(91, 23);  
+            drawString(menu, 1);        //MENU
 
+            //Shapes & Lines
             ssd1305_DrawRectangle(menuRect, 0);
-            drawString(runCycle, 0);
-            ssd1305_SetCursor(74,21);
-            drawString(menu1, 1);
-            ssd1305_SetCursor(80,21);
-            drawString(menu2, 1);
-            ssd1305_Line(79,21,79,27, 0);
- 
+            ssd1305_Line(podLine.x1, podLine.y1, podLine.x2, podLine.y2, 0);   //Divider
+            ssd1305_Line(cathLine.x1, cathLine.y1, cathLine.x2, cathLine.y2, 0);   //Divider
+            ssd1305_Line(horizontalLine.x1, horizontalLine.y1, horizontalLine.x2, horizontalLine.y2, 0);   //Horizontal Line
 
             writeData();
             break;
@@ -432,15 +428,15 @@ void ssd1305_DrawPixel(uint8_t x, uint8_t y, int color) {
  * Inputs: char, int
  * Outputs: None
  ****************************************************************/
-void ssd1305_WriteChar(char ch, int color) {
-    FontDef Font = Font_5x7;                //TODO Change font for M & W
+void ssd1305_WriteChar(FontDef Font, char ch, int color) {
+    //FontDef Font = Font_5x7;                //TODO Change font for M & W
     int b;
     //FontDef Font, SSD1306_COLOR color
     // Check if character is valid
     if (ch < 32 || ch > 126){
-       
+        return;
     }
-      
+
     // Check remaining space on current line
     if (SSD1305_WIDTH < (SSD1306.CurrentX + Font.FontWidth) ||
         SSD1305_HEIGHT < (SSD1306.CurrentY + Font.FontHeight))
@@ -474,7 +470,15 @@ void drawString(char *string, int color){
     int size = strlen(string);
     
     for(int i = 0; i < size; i++){
-        ssd1305_WriteChar(string[i], color);
+        if(string[i] == 'M' || string[i] == 'W' || string[i] ==  '-'){
+            ssd1305_WriteChar(Font_6x7, string[i], color);
+        }else if(string[i] == 'I' || string[i] == 'T' || string[i] == 'c'){
+            ssd1305_WriteChar(Font_4x7, string[i], color);
+        }else if(string[i] == '|' || string[i] == ':' || string[i] == 32){
+            ssd1305_WriteChar(Font_2x7, string[i], color);
+        }else{
+            ssd1305_WriteChar(Font_5x7, string[i], color);
+        }
     }
 }
 

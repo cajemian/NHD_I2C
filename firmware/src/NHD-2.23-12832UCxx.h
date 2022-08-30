@@ -165,7 +165,7 @@ void stateMachineLoop(DISPLAY_STATES  stateMachine);
 //Functions for Writing to the Screen
 void writeData();
 void ssd1305_DrawPixel(uint8_t x, uint8_t y, int color);
-void ssd1305_WriteChar(char ch, int color);
+//void ssd1305_WriteChar(FontDef Font, char ch, int color);
 void drawString(char *string, int color);
 void ssd1305_Fill();
 void ssd1305_SetCursor(uint8_t x, uint8_t y);

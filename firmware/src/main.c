@@ -93,6 +93,7 @@ int main ( void )
         
         if(EJECT_BTN_Get() == 1){
              HRTBEAT_LED_Toggle();
+             stateMachine = ABC;
         }
         
         if(SELECT_BTN_Get() == 1){
@@ -115,8 +116,7 @@ int main ( void )
              LED_YEL_Toggle();
              nav2Flg = !nav2Flg;
         }
-        
-         
+            
         if(counter10ms >= 1){
             //printf("10ms");
             counter10ms = 0;
@@ -136,6 +136,9 @@ int main ( void )
                 case CLEAR:
                     break;
                 case ABC:
+                    if(timeofstate >= 5){
+                        stateMachine = RUNCYCLE;
+                    }
                     break;
                 case POWERUP:
                     if(timeofstate >= 3){
@@ -146,6 +149,7 @@ int main ( void )
                 case RUNCYCLE:
                     if(nav1Flg == 1){
                         stateMachine = MENU;
+                        nav1Flg = 0;
                     }
                     if(selFlg == 1){
                         stateMachine = SYSTEMSCHECKS;
@@ -154,6 +158,7 @@ int main ( void )
                 case MENU:
                     if(nav1Flg == 1){
                         stateMachine = RUNCYCLE;
+                        nav1Flg = 0;
                     }
                     if(selFlg == 1){
                         stateMachine = SYSTEMSCHECKS;
