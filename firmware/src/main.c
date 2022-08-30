@@ -40,9 +40,10 @@ void TC3_Callback_InterruptHandler(TC_TIMER_STATUS status, uintptr_t context)
     /* Toggle LED, Visible Tick */     
     counter10ms++; 
     //LED_YEL_Toggle();
+    LED_BLU_Toggle();
+    LED_GRN_Toggle();
+    LED_RED_Toggle();
     
-
-
 }
 
 int main ( void )
@@ -59,14 +60,17 @@ int main ( void )
     counter10ms = 0;
     counter100ms = 0;
     counter1S = 0;
-    int state = SETUP;
+    DISPLAY_STATES  stateMachine = SETUP;
+    int timeofstate = 0;
     
     HRTBEAT_LED_Set();
     
     I2C_Reset_Set();        // Keep Reset LED high
     
-    int flag = 0;
-    stateMachineLoop(state, flag);    // Setup Display before writing to it
+    int selFlg = 0;
+    int nav1Flg = 0;
+    int nav2Flg = 0;
+    stateMachineLoop(stateMachine);    // Setup Display before writing to it
      
     while(true)
     {   
@@ -80,9 +84,38 @@ int main ( void )
         if(CASE_MISS_Get() == 1){
             //printf("CASE MISSING Toggle LED");
             LED_YEL_Toggle();
-            state = RUNCYCLE;
-            flag = !flag;
+            selFlg = !selFlg;
+            if(selFlg == 1){
+                //state = SYSTEMSCHECKS;
+            }else{
+            }
         }
+        
+        if(EJECT_BTN_Get() == 1){
+             HRTBEAT_LED_Toggle();
+        }
+        
+        if(SELECT_BTN_Get() == 1){
+             HRTBEAT_LED_Toggle();
+             selFlg = !selFlg;
+        }
+        
+        if(POWER_BTN_Get() == 1){
+             stateMachine = POWERUP;
+             timeofstate = 0;
+             
+        }
+        
+        if(NAV_BTN_A_Get() == 1){
+             LED_YEL_Toggle();
+             nav1Flg = !nav1Flg;
+        }
+        
+        if(NAV_BTN_B_Get() == 1){
+             LED_YEL_Toggle();
+             nav2Flg = !nav2Flg;
+        }
+        
          
         if(counter10ms >= 1){
             //printf("10ms");
@@ -97,11 +130,45 @@ int main ( void )
         }
         
         if(counter1S >= 10){
-           
-            stateMachineLoop(state, flag);
+            switch(stateMachine){
+                case SETUP:
+                    break;
+                case CLEAR:
+                    break;
+                case ABC:
+                    break;
+                case POWERUP:
+                    if(timeofstate >= 3){
+                        stateMachine = RUNCYCLE;
+                    }
+                    break;
+                
+                case RUNCYCLE:
+                    if(nav1Flg == 1){
+                        stateMachine = MENU;
+                    }
+                    if(selFlg == 1){
+                        stateMachine = SYSTEMSCHECKS;
+                    }
+                    break;
+                case MENU:
+                    if(nav1Flg == 1){
+                        stateMachine = RUNCYCLE;
+                    }
+                    if(selFlg == 1){
+                        stateMachine = SYSTEMSCHECKS;
+                    }
+                    break;
+                case SYSTEMSCHECKS:
+                    break;
+                default:
+                    break;
+                            
+            }
             
-            HRTBEAT_LED_Toggle();
+            stateMachineLoop(stateMachine);  //Update screen based off state
             counter1S = 0;
+            timeofstate++;
         }
 
     } 

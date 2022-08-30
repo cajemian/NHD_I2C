@@ -5,7 +5,7 @@
     Company Name
 
   @File Name
-    filename.c
+    fonts.c
 
   @Summary
     Brief description of the file.

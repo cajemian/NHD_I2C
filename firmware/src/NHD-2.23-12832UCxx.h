@@ -5,7 +5,7 @@
     Company Name
 
   @File Name
-    filename.h
+    NHD-2.23-12832UCxx.h
 
   @Summary
     Brief description of the file.
@@ -18,7 +18,6 @@
 #ifndef _NHD_H    /* Guard against multiple inclusion */
 #define _NHD_H
 
-
 /* ************************************************************************** */
 /* ************************************************************************** */
 /* Section: Included Files                                                    */
@@ -30,29 +29,28 @@ extern "C" {
 #endif
 
 
-    /* ************************************************************************** */
-    /* ************************************************************************** */
-    /* Section: Constants                                                         */
-    /* ************************************************************************** */
-    /* ************************************************************************** */
-//define LED_ON()                       LED_Clear()
-//#define LED_OFF()                      LED_Set()
-
+/* ************************************************************************** */
+/* ************************************************************************** */
+/* Section: Constants                                                         */
+/* ************************************************************************** */
+/* ************************************************************************** */
+#define WHITE 1
+#define Black 0
+    
 #define SSD1305_HEIGHT                      32
 #define SSD1305_WIDTH                       128
 #define SSD1305_BUFFER_SIZE                 SSD1305_WIDTH * SSD1305_HEIGHT / 8
     
-    
 #define APP_AT24MAC_DEVICE_ADDR             0x003D
 #define APP_AT24MAC_MEMORY_ADDR             0x00
 #define APP_AT24MAC_MEMORY_ADDR1            0x00
-#define APP_TRANSMIT_DATA_LENGTH            2//6
+#define APP_TRANSMIT_DATA_LENGTH            2
 #define APP_ACK_DATA_LENGTH                 1
 #define APP_RECEIVE_DUMMY_WRITE_LENGTH      2
 #define APP_RECEIVE_DATA_LENGTH             4
 #define SETUP_COMMANDS                      33
-#define CLEAR_COMMANDS                      12
 
+//Setup Commands Defined
 #define setDisplayClock 0xD5
 #define RatioFrequency 0x01
 
@@ -102,15 +100,14 @@ typedef enum
 {
     SETUP,
     CLEAR,
-    DRAW,
-    POWERUP,
-    LETTER,
     ABC,
+    POWERUP,
     RUNCYCLE,
-    STOP,
+    MENU,
+    SYSTEMSCHECKS,
+            
 
 } DISPLAY_STATES;
-
 
 typedef enum
 {
@@ -160,32 +157,25 @@ typedef struct {
     uint8_t y2;
 } COORDINATES;
 
-#define I2C_SLAVE_ADDR 0x3D
-    
 
-#define WHITE 1
-#define Black 0
-
-extern uint8_t pageAddress;
-extern uint8_t colAddress;
-
-void ssd1306_DrawPixel(uint8_t x, uint8_t y, int color);
-void ssd1306_WriteChar(char ch);
-void writeData();
-
+//Functions for navigating I2C and States
 int I2C(uint8_t type, uint8_t data);          //returns 0 when in process
-void stateMachineLoop(DISPLAY_STATES  stateMachine, int flag);
-void ssd1306_Fill();
-void drawString(char *string);
-void ssd1306_DrawRectangle(COORDINATES coordinates);
-void ssd1306_Line(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2);
-void ssd1306_SetCursor(uint8_t x, uint8_t y);
+void stateMachineLoop(DISPLAY_STATES  stateMachine);
 
-void drawChar(uint8_t y, char ch);
-void sendCommand(uint8_t data);//returns 1 when done sending
-void sendData(uint8_t data);
-void setStartPage(uint8_t pageAddr);
-void setStartColumn(uint8_t address);
+//Functions for Writing to the Screen
+void writeData();
+void ssd1305_DrawPixel(uint8_t x, uint8_t y, int color);
+void ssd1305_WriteChar(char ch, int color);
+void drawString(char *string, int color);
+void ssd1305_Fill();
+void ssd1305_SetCursor(uint8_t x, uint8_t y);
+void ssd1305_Line(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2, int color);
+void ssd1305_DrawRectangle(COORDINATES coordinates, int color);
+
+//Functions for sending Commands and Startup
+void sendCommand(uint8_t data); // returns 1 when done sending
+void setStartPage(uint8_t pageAddr);    // Not Used
+void setStartColumn(uint8_t address);   // Not Used
 void setPageAddress(uint8_t startAddr, uint8_t endAddr);
 void setColumnAddress(uint8_t startAddr, uint8_t endAddr);
 void setAddressingMode(uint8_t mode);
