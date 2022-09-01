@@ -372,10 +372,273 @@ void stateMachineLoop(DISPLAY_STATES  screenState){
             setPageAddress(0, 3);
             setColumnAddress(4, 131);
             setAddressingMode(0x00);
-
-            ssd1305_SetCursor(15,0);
             ssd1305_Fill();
-            drawString(systemChecks, 0);
+
+            ssd1305_SetCursor(1,2);
+            drawString(systemChecks, 0);    // STATUS:SYSTEMS CHECK
+            
+            ssd1305_SetCursor(1,12);
+            drawString(systemChecks2, 0);   // CLEANING ABOUT TO START
+            
+            ssd1305_SetCursor(1,22);
+            drawString(systemChecks3, 0);   // HOLD SELECT TO CANCEL CYCLE
+
+            writeData();
+            break;
+        case PODMISSING:
+            setPageAddress(0, 3);
+            setColumnAddress(4, 131);
+            setAddressingMode(0x00);
+            ssd1305_Fill();
+
+            ssd1305_SetCursor(1,2);
+            drawString(systemFailed, 0);    // STATUS:SYSTEM CHECK FAILED
+            
+            ssd1305_SetCursor(1,12);
+            drawString(podMissing, 0);   // POD MISSING:INSERT POD
+            ssd1305_SetCursor(1,22);
+            drawString(pressSelect, 0);   // PRESS SELECT TO CONTINUE
+
+            writeData();
+            break;
+        case PODEXHAUSTED:
+            setPageAddress(0, 3);
+            setColumnAddress(4, 131);
+            setAddressingMode(0x00);
+            ssd1305_Fill();
+
+            ssd1305_SetCursor(1,2);
+            drawString(systemFailed, 0);    // STATUS:SYSTEM CHECK FAILED
+            
+            ssd1305_SetCursor(1,12);
+            drawString(podExhausted, 0);   // POD EXHUASTED:INSERT NEW POD
+            
+            ssd1305_SetCursor(1,22);
+            drawString(pressSelect, 0);   // PRESS SELECT TO CONTINUE
+
+            writeData();
+            break;
+        case CASEMISSING:
+            setPageAddress(0, 3);
+            setColumnAddress(4, 131);
+            setAddressingMode(0x00);
+            ssd1305_Fill();
+
+            ssd1305_SetCursor(1,2);
+            drawString(systemFailed, 0);    // STATUS:SYSTEM CHECK FAILED
+            
+            ssd1305_SetCursor(1,12);
+            drawString(caseMissing, 0);   // POD EXHUASTED:INSERT NEW POD
+            
+            ssd1305_SetCursor(1,22);
+            drawString(pressSelect, 0);   // PRESS SELECT TO CONTINUE
+
+            writeData();
+            break;
+        case CATHMISSING:
+            setPageAddress(0, 3);
+            setColumnAddress(4, 131);
+            setAddressingMode(0x00);
+            ssd1305_Fill();
+
+            ssd1305_SetCursor(1,2);
+            drawString(systemFailed, 0);    // STATUS:SYSTEM CHECK FAILED
+            
+            ssd1305_SetCursor(1,12);
+            drawString(cathMissing, 0);   // POD EXHUASTED:INSERT NEW POD
+            
+            ssd1305_SetCursor(1,22);
+            drawString(pressSelect, 0);   // PRESS SELECT TO CONTINUE
+
+            writeData();
+            break;
+        case CATHEXHAUSTED:
+            setPageAddress(0, 3);
+            setColumnAddress(4, 131);
+            setAddressingMode(0x00);
+            ssd1305_Fill();
+
+            ssd1305_SetCursor(1,2);
+            drawString(systemFailed, 0);    // STATUS:SYSTEM CHECK FAILED
+            
+            ssd1305_SetCursor(1,12);
+            drawString(cathExhausted, 0);   // POD EXHUASTED:INSERT NEW POD
+            
+            ssd1305_SetCursor(1,22);
+            drawString(pressSelect, 0);   // PRESS SELECT TO CONTINUE
+
+            writeData();
+            break;
+        case LEAKING:
+            setPageAddress(0, 3);
+            setColumnAddress(4, 131);
+            setAddressingMode(0x00);
+            ssd1305_Fill();
+
+            ssd1305_SetCursor(1,2);
+            drawString(systemFailed, 0);    // STATUS:SYSTEM CHECK FAILED
+            
+            ssd1305_SetCursor(1,12);
+            drawString(leaking, 0);   // POD EXHUASTED:INSERT NEW POD
+            
+            ssd1305_SetCursor(1,22);
+            drawString(pressSelect, 0);   // PRESS SELECT TO CONTINUE
+
+            writeData();
+            break;
+        case WASTEWATERRESERVOIR:
+            setPageAddress(0, 3);
+            setColumnAddress(4, 131);
+            setAddressingMode(0x00);
+            ssd1305_Fill();
+
+            ssd1305_SetCursor(1,2);
+            drawString(systemFailed, 0);    // STATUS:SYSTEM CHECK FAILED
+            
+            ssd1305_SetCursor(1,12);
+            drawString(reservoirCheck, 0);   // POD EXHUASTED:INSERT NEW POD
+            
+            ssd1305_SetCursor(1,22);
+            drawString(pressSelect, 0);   // PRESS SELECT TO CONTINUE
+
+            writeData();
+            break;
+        case CLEANING:
+            setPageAddress(0, 3);
+            setColumnAddress(4, 131);
+            setAddressingMode(0x00);
+            ssd1305_Fill();
+
+            ssd1305_SetCursor(1,2);
+            drawString(cleaning, 0);    // STATUS:CLEANING
+
+            ssd1305_SetCursor(1,22);
+            drawString(holdCancel, 0);   // HOLD SELECT TO CANCEL CYCLE
+
+            writeData();
+            break;
+        case DISINFECTION:
+            setPageAddress(0, 3);
+            setColumnAddress(4, 131);
+            setAddressingMode(0x00);
+            ssd1305_Fill();
+            
+            ssd1305_SetCursor(1,2);
+            drawString(disinfect, 0);    // STATUS:DISINFECTION
+            
+            ssd1305_SetCursor(1,22);
+            drawString(holdCancel, 0);   // HOLD SELECT TO CANCEL CYCLE
+
+            writeData();
+            break;
+        case DRYING:
+            setPageAddress(0, 3);
+            setColumnAddress(4, 131);
+            setAddressingMode(0x00);
+            ssd1305_Fill();
+            
+            ssd1305_SetCursor(1,2);
+            drawString(drying, 0);    // STATUS:DRYING
+            
+            ssd1305_SetCursor(1,22);
+            drawString(holdCancel, 0);   // HOLD SELECT TO CANCEL CYCLE
+
+            writeData();
+            break;
+        case CANCELSEL0:
+            setPageAddress(0, 3);
+            setColumnAddress(4, 131);
+            setAddressingMode(0x00);
+            ssd1305_Fill();
+
+            ssd1305_SetCursor(1,2);
+            drawString(cancelCycle, 0);    // CANCEL THE CURRENT CYCLE?
+
+            ssd1305_SetCursor(1,22);
+            drawString(continueCycle, 1);    // CONTINUE CYCLE
+            
+            ssd1305_SetCursor(70,22);
+            drawString(cancelCycle2, 0);   // CANCEL CYCLE
+            
+            //Draw Rectangle
+            ssd1305_DrawRectangle(continueRect, 0);
+
+            writeData();
+            break;
+        case CANCELSEL1:
+            setPageAddress(0, 3);
+            setColumnAddress(4, 131);
+            setAddressingMode(0x00);
+            ssd1305_Fill();
+
+            ssd1305_SetCursor(1,2);
+            drawString(cancelCycle, 0);    // CANCEL THE CURRENT CYCLE?
+
+            ssd1305_SetCursor(1,22);
+            drawString(continueCycle, 0);    // CONTINUE CYCLE
+            
+            ssd1305_SetCursor(70,22);
+            drawString(cancelCycle2, 1);   // CANCEL CYCLE
+            
+            //Draw Rectangle
+            ssd1305_DrawRectangle(cancelRect, 0);
+
+            writeData();
+            break;
+        case COMPLETE:
+            setPageAddress(0, 3);
+            setColumnAddress(4, 131);
+            setAddressingMode(0x00);
+            ssd1305_Fill();
+
+            ssd1305_SetCursor(1,2);
+            drawString(complete, 0);    // STATUS:CLEANING COMPLETE
+
+            ssd1305_SetCursor(1,12);
+            drawString(dateTime, 0);    // DATE & TIME
+            
+            ssd1305_SetCursor(1,22);
+            drawString(pressEject, 0);   // PRESS EJECT TO USE CATHETER
+
+            writeData();
+            break;
+        case CANCELLED:
+            setPageAddress(0, 3);
+            setColumnAddress(4, 131);
+            setAddressingMode(0x00);
+            ssd1305_Fill();
+
+            ssd1305_SetCursor(1,2);
+            drawString(cancelled, 0);    // CYCLE CANCELLED
+
+            ssd1305_SetCursor(1,12);
+            drawString(purge, 0);    // COMPLETING PURGE CYCLE
+            
+            ssd1305_SetCursor(1,22);
+            drawString(pleaseWait, 0);   // PLEASE WAIT
+
+            writeData();
+            break;
+        case PURGE:
+            setPageAddress(0, 3);
+            setColumnAddress(4, 131);
+            setAddressingMode(0x00);
+            ssd1305_Fill();
+
+            ssd1305_SetCursor(1,2);
+            drawString(cancelled, 0);    // CYCLE CANCELLED
+
+            ssd1305_SetCursor(1,12);
+            drawString(empty, 0);    // EMPTY AND REFILL WATER
+            
+            ssd1305_SetCursor(1,22);
+            drawString(pressSelect, 0);   // PRESS SELECT TO CONTINUE
+
+            writeData();
+            break;
+        case LUBRICATION:
+            ssd1305_SetCursor(1,2);
+            //drawString(lubrication, 0);    // STATUS:CLEANING
 
             writeData();
             break;

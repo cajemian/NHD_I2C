@@ -1,26 +1,59 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
-    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="5">
+    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="12">
         <file>
             <url>file:/C:/Users/cajemian/HarmonyProjects/Display/firmware/src/NHD-2.23-12832UCxx.c</url>
-            <bookmark id="2">
+            <bookmark id="6">
                 <name/>
-                <line>294</line>
+                <line>431</line>
                 <key/>
             </bookmark>
             <bookmark id="4">
                 <name/>
-                <line>347</line>
+                <line>560</line>
                 <key/>
             </bookmark>
             <bookmark id="3">
                 <name/>
-                <line>348</line>
+                <line>560</line>
                 <key/>
             </bookmark>
             <bookmark id="1">
                 <name/>
-                <line>359</line>
+                <line>560</line>
+                <key/>
+            </bookmark>
+            <bookmark id="7">
+                <name/>
+                <line>579</line>
+                <key/>
+            </bookmark>
+            <bookmark id="8">
+                <name/>
+                <line>588</line>
+                <key/>
+            </bookmark>
+            <bookmark id="9">
+                <name/>
+                <line>598</line>
+                <key/>
+            </bookmark>
+            <bookmark id="10">
+                <name/>
+                <line>610</line>
+                <key/>
+            </bookmark>
+        </file>
+        <file>
+            <url>file:/C:/Users/cajemian/HarmonyProjects/Display/firmware/src/NHD-2.23-12832UCxx.h</url>
+            <bookmark id="11">
+                <name/>
+                <line>176</line>
+                <key/>
+            </bookmark>
+            <bookmark id="12">
+                <name/>
+                <line>177</line>
                 <key/>
             </bookmark>
         </file>
@@ -28,19 +61,16 @@
             <url>file:/C:/Users/cajemian/HarmonyProjects/Display/firmware/src/main.c</url>
             <bookmark id="5">
                 <name/>
-                <line>128</line>
+                <line>178</line>
                 <key/>
             </bookmark>
         </file>
     </editor-bookmarks>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/cajemian/HarmonyProjects/Display/firmware/src/main.c</file>
             <file>file:/C:/Users/cajemian/HarmonyProjects/Display/firmware/src/NHD-2.23-12832UCxx.c</file>
             <file>file:/C:/Users/cajemian/HarmonyProjects/Display/firmware/src/NHD-2.23-12832UCxx.h</file>
             <file>file:/C:/Users/cajemian/HarmonyProjects/Display/firmware/src/fonts.h</file>
-            <file>file:/C:/Users/cajemian/HarmonyProjects/Display/firmware/src/graphics.h</file>
-            <file>file:/C:/Users/cajemian/HarmonyProjects/Display/firmware/src/fonts.c</file>
         </group>
     </open-files>
 </project-private>

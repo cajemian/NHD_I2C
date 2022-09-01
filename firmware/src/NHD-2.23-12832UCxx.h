@@ -102,9 +102,28 @@ typedef enum
     CLEAR,
     ABC,
     POWERUP,
+    // Idle
     RUNCYCLE,
     MENU,
+    // System Checks
     SYSTEMSCHECKS,
+    PODMISSING,
+    PODEXHAUSTED,
+    CASEMISSING,
+    CATHMISSING,
+    CATHEXHAUSTED,
+    LEAKING,
+    WASTEWATERRESERVOIR,
+    // Cleaning Cycle
+    CLEANING,
+    DISINFECTION, 
+    DRYING,
+    CANCELSEL0,
+    CANCELSEL1,
+    COMPLETE,
+    CANCELLED,
+    PURGE,
+    LUBRICATION,
             
 
 } DISPLAY_STATES;

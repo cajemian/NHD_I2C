@@ -52,7 +52,36 @@ char ABCs[] = "ABCDEFGHIJKLMNOPQRSTUVWXY";
 char nums[] = "Z0123456789";
 char runCycle[] = "RUN CYCLE";
 char menu[] = "MENU";
-char systemChecks[] = "STATUS:SYSTEM CHECKS";
+//System Checks
+char systemChecks[] = "STATUS:SYSTEMS CHECK";
+char systemChecks2[] = "CLEANING ABOUT TO START";
+char systemChecks3[] = "HOLD SELECT TO CANCEL CYCLE";   //TODO Repeat
+char systemFailed[] = "STATUS:SYSTEM CHECK FAILED";
+char pressSelect[] = "PRESS SELECT TO CONTINUE";
+char podMissing[] = "POD MISSING:INSERT POD";
+char podExhausted[] = "POD EXHUASTED:INSERT NEW POD";
+char caseMissing[] =  "CASE MISSING:INSERT CASE";
+char cathMissing[] = "CATHETER MISSING";    // Not done
+char cathExhausted[] = "CATHETER EXHAUSTED";// Not done
+char leaking[] = "LEAK CHECK FAILED";   // Not done
+char reservoirCheck[] = "RESERVOIR CHECK FAILED";   // Not done
+//Cleaning Cycle
+char holdCancel[] = "HOLD SELECT TO CANCEL CYCLE";  //TODO Repeat
+char cleaning[] =  "STATUS:CLEANING";
+char disinfect[] = "STATUS:DISINFECTION";
+char drying[] =    "STATUS:DRYING             ";    // Ending spaces to clear row
+char complete[] = "STATUS:CLEANING COMPLETE";
+char dateTime[] = "09|01|2022-09:30";
+char pressEject[] = "PRESS EJECT TO USE CATHETER";
+char cancelCycle[] = "CANCEL THE CURRENT CYCLE?";
+char continueCycle[] = "CONTINUE CYCLE";
+char cancelCycle2[] = "CANCEL CYCLE";
+//Cancelled-Purge Cycle
+char cancelled[] = "CYCLE CANCELLED";
+char purge[] = "COMPLETING PURGE CYCLE";
+char pleaseWait[] = "PLEASE WAIT";
+char empty[] = "EMPTY AND REFILL WATER";
+
 
 char battery[] = "abc";
 char cath[] = "CATH-70|99";
@@ -68,6 +97,10 @@ COORDINATES cathLine = {116,0,116,8};
 COORDINATES monthLine = {71,12,71,20};
 COORDINATES yearLine = {83,12,83,20};
 COORDINATES horizontalLine = {0,10,127,10,};
+COORDINATES continueRect = {0, 21, 65, 29};                  //contiune Cycle
+COORDINATES cancelRect = {69, 21, 126, 29};                    //cancel Cycle
+ 
+
 
 //PRIMARY FONT
 static const uint16_t Font5x7 [] = {

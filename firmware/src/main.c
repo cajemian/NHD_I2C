@@ -33,6 +33,18 @@ uint8_t drawLine = 0;
 uint8_t pageAddress = 0;        //Page 0 out of 4
 uint8_t colAddress = 4;         //Global address of column pixel, Start with 4
 
+//Flags to indicate pass/fail of system checks before Cleaning Cycle
+typedef struct
+{
+    uint8_t podMissing;
+    uint8_t podExhausted;
+    uint8_t caseMissing;
+    uint8_t cathMissing;
+    uint8_t cathExhausted;
+    uint8_t leaking;
+    uint8_t wasteWaterReservoir;
+
+} SYSTEMS_CHECK_FLAGS;
 
 //10ms Interrupt
 void TC3_Callback_InterruptHandler(TC_TIMER_STATUS status, uintptr_t context)
@@ -61,6 +73,8 @@ int main ( void )
     counter100ms = 0;
     counter1S = 0;
     DISPLAY_STATES  stateMachine = SETUP;
+    DISPLAY_STATES  previousState = CLEANING;           //TODO Going back to beginning of state or middle?
+    SYSTEMS_CHECK_FLAGS sysCheckFlgs = {0, 0, 0, 0, 0, 0, 0};   // Init all flags to 0
     int timeofstate = 0;
     
     HRTBEAT_LED_Set();
@@ -70,6 +84,7 @@ int main ( void )
     int selFlg = 0;
     int nav1Flg = 0;
     int nav2Flg = 0;
+    int ejectFlg = 0;
     stateMachineLoop(stateMachine);    // Setup Display before writing to it
      
     while(true)
@@ -93,7 +108,8 @@ int main ( void )
         
         if(EJECT_BTN_Get() == 1){
              HRTBEAT_LED_Toggle();
-             stateMachine = ABC;
+             ejectFlg = !ejectFlg;
+             //stateMachine = ABC;
         }
         
         if(SELECT_BTN_Get() == 1){
@@ -130,7 +146,7 @@ int main ( void )
         }
         
         if(counter1S >= 10){
-            switch(stateMachine){
+            switch(stateMachine){           //TODO Can all buttons/time be cleared between state changes?
                 case SETUP:
                     break;
                 case CLEAR:
@@ -152,7 +168,9 @@ int main ( void )
                         nav1Flg = 0;
                     }
                     if(selFlg == 1){
-                        stateMachine = SYSTEMSCHECKS;
+                        stateMachine = SYSTEMSCHECKS;   //  Move on to System Checks
+                        timeofstate = 0;                //  Reset time of state
+                        selFlg = 0;
                     }
                     break;
                 case MENU:
@@ -161,10 +179,167 @@ int main ( void )
                         nav1Flg = 0;
                     }
                     if(selFlg == 1){
-                        stateMachine = SYSTEMSCHECKS;
+                        //stateMachine = SYSTEMSCHECKS;       // TODO Move on to Menu
+                        timeofstate = 0;                      
+                        selFlg = 0;
                     }
                     break;
                 case SYSTEMSCHECKS:
+                    if(sysCheckFlgs.podMissing == 1){
+                        stateMachine = PODMISSING;
+                    }
+                    else if(sysCheckFlgs.podExhausted == 1){
+                        stateMachine = PODEXHAUSTED;
+                    }
+                    else if(sysCheckFlgs.caseMissing == 1){
+                        stateMachine = CASEMISSING;
+                    }
+                    else if(sysCheckFlgs.cathMissing == 1){
+                        stateMachine = CATHMISSING;
+                    }
+                    else if(sysCheckFlgs.cathExhausted == 1){
+                        stateMachine = CATHEXHAUSTED;
+                    }
+                    else if(sysCheckFlgs.leaking == 1){
+                        stateMachine = LEAKING;
+                    }
+                    else if(sysCheckFlgs.wasteWaterReservoir == 1){
+                        stateMachine = WASTEWATERRESERVOIR;
+                    }
+                    else{
+                        if(timeofstate >= 5){
+                            stateMachine = CLEANING;
+                            timeofstate = 0;
+                        }
+                    }
+                    
+                    break;
+                case PODMISSING:
+                    //Press Select to Continue
+                    if(selFlg == 1){
+                        stateMachine = RUNCYCLE;        // Back to Idle Screen
+                        selFlg = 0;     // Reset Select flag
+                    }
+                    break;
+                case PODEXHAUSTED:
+                    if(selFlg == 1){
+                        stateMachine = RUNCYCLE;        // Back to Idle Screen
+                        selFlg = 0;     // Reset Select flag
+                    }
+                    break;
+                case CASEMISSING:
+                    if(selFlg == 1){
+                        stateMachine = RUNCYCLE;        // Back to Idle Screen
+                        selFlg = 0;     // Reset Select flag
+                    }
+                    break;
+                case CATHMISSING:
+                    if(selFlg == 1){
+                        stateMachine = RUNCYCLE;        // Back to Idle Screen
+                        selFlg = 0;     // Reset Select flag
+                    }
+                    break;
+                case CATHEXHAUSTED:
+                    if(selFlg == 1){
+                        stateMachine = RUNCYCLE;        // Back to Idle Screen
+                        selFlg = 0;     // Reset Select flag
+                    }
+                    break;
+                case LEAKING:
+                    if(selFlg == 1){
+                        stateMachine = RUNCYCLE;        // Back to Idle Screen
+                        selFlg = 0;     // Reset Select flag
+                    }
+                    break;
+                case WASTEWATERRESERVOIR:
+                    if(selFlg == 1){
+                        stateMachine = RUNCYCLE;        // Back to Idle Screen
+                        selFlg = 0;     // Reset Select flag
+                    }
+                    break;
+                case CLEANING:
+                    if(selFlg == 1){
+                        stateMachine = CANCELSEL0;
+                        previousState = CLEANING;
+                        selFlg = 0;
+                        nav1Flg = 0;
+                        nav2Flg = 0;
+                    }
+                    if(timeofstate >= 5){               //TODO random value to trigger change
+                        stateMachine = DISINFECTION;
+                        timeofstate = 0;
+                    }
+                    break;
+                case DISINFECTION:
+                    if(selFlg == 1){
+                        stateMachine = CANCELSEL0;
+                        previousState = DISINFECTION;
+                        selFlg = 0;
+                        nav1Flg = 0;
+                        nav2Flg = 0;
+                    }
+                    if(timeofstate >= 5){               //TODO random value to trigger change
+                        stateMachine = DRYING;
+                        timeofstate = 0;
+                    }
+                    break;
+                case DRYING:
+                    if(selFlg == 1){
+                        stateMachine = CANCELSEL0;
+                        previousState = DRYING;
+                        selFlg = 0;
+                        nav1Flg = 0;
+                        nav2Flg = 0;
+                    }
+                    if(timeofstate >= 5){               //TODO random value to trigger change
+                        stateMachine = COMPLETE;
+                        timeofstate = 0;
+                    }
+                    break;
+                case CANCELSEL0:
+                    if(selFlg == 1){
+                        // Continue Cycle
+                        stateMachine = previousState;   //Go back to state before cancel
+                        selFlg = 0;
+                        timeofstate = 0;
+                    }
+                    if(nav1Flg == 1 || nav2Flg == 1){   //Navigate to select other option
+                        stateMachine = CANCELSEL1;      // Highlight Cancel Cycle
+                        nav1Flg = 0;
+                        nav2Flg = 0;
+                    }
+                    break;
+                case CANCELSEL1:
+                    if(selFlg == 1){
+                        stateMachine = CANCELLED;
+                        timeofstate = 0;
+                    }
+                    if(nav1Flg == 1 || nav2Flg == 1){   //Navigate to select other option
+                        stateMachine = CANCELSEL0;      // Highlight Continue Cycle
+                        nav1Flg = 0;
+                        nav2Flg = 0;
+                    }
+                    break;
+                case COMPLETE:
+                    if(ejectFlg == 1){
+                        // Use Catheter, Lubrication
+                    }
+                    break;
+                case CANCELLED:
+                    if(timeofstate >= 5){               //TODO random value to trigger change
+                        stateMachine = PURGE;
+                        timeofstate = 0;
+                    }
+                    break;
+                case PURGE:
+                    break;
+                case LUBRICATION:
+                    if(selFlg == 1){
+                        //cancel cycle
+                    }
+                    if(timeofstate >= 5){               //TODO random value to trigger change
+                        timeofstate = 0;
+                    }
                     break;
                 default:
                     break;
