@@ -52,6 +52,23 @@ char ABCs[] = "ABCDEFGHIJKLMNOPQRSTUVWXY";
 char nums[] = "Z0123456789";
 char runCycle[] = "RUN CYCLE";
 char menu[] = "MENU";
+//Device Menu
+char changeAir[] = "CHANGE AIR FILTER";
+char changeWater[] = "CHANGE WATER FILTER";
+char runPurge[] = "RUN PURGE CYCLE";
+char runDescale[] = "RUN DE-SCALE CYCLE";
+char purging[] =    "STATUS:PURGING";
+char descaling[] =    "STATUS:DESCALING";
+char loadDescale[] = "LOAD DE-SCALE FLUID";
+char completedPurge[] = "PURGE CYCLE COMPLETE";
+char descalePurge[] = "DESCALE CYCLE COMPLETE";
+char setDateTime[] = "SET TIME-DATE";
+char back[] = "BACK";
+char removePanel[] = "REMOVE PANEL 1 AND REPLACE";
+char finished[] = "FINISHED";
+char cancel[] = "CANCEL";
+char startCycle[] = "START CYCLE";
+
 //System Checks
 char systemChecks[] = "STATUS:SYSTEMS CHECK";
 char systemChecks2[] = "CLEANING ABOUT TO START";
@@ -69,7 +86,7 @@ char reservoirCheck[] = "RESERVOIR CHECK FAILED";   // Not done
 char holdCancel[] = "HOLD SELECT TO CANCEL CYCLE";  //TODO Repeat
 char cleaning[] =  "STATUS:CLEANING";
 char disinfect[] = "STATUS:DISINFECTION";
-char drying[] =    "STATUS:DRYING             ";    // Ending spaces to clear row
+char drying[] =    "STATUS:DRYING";    // Ending spaces to clear row
 char complete[] = "STATUS:CLEANING COMPLETE";
 char dateTime[] = "09|01|2022-09:30";
 char pressEject[] = "PRESS EJECT TO USE CATHETER";
@@ -81,6 +98,9 @@ char cancelled[] = "CYCLE CANCELLED";
 char purge[] = "COMPLETING PURGE CYCLE";
 char pleaseWait[] = "PLEASE WAIT";
 char empty[] = "EMPTY AND REFILL WATER";
+//Completed
+char processing[] = "STATUS: PROCESSING";
+char disconnect[]  = "SAFE TO REMOVE CASE NOW";
 
 
 char battery[] = "abc";
@@ -92,14 +112,24 @@ char time[] = "09:30";
 //Coordinates for Lines
 COORDINATES runRect = {14, 22, 56, 30};
 COORDINATES menuRect = {90, 22, 111, 30};
-COORDINATES podLine = {58, 0, 58, 0};
+COORDINATES podLine = {58, 0, 58, 8};
 COORDINATES cathLine = {116,0,116,8};
 COORDINATES monthLine = {71,12,71,20};
 COORDINATES yearLine = {83,12,83,20};
 COORDINATES horizontalLine = {0,10,127,10,};
 COORDINATES continueRect = {0, 21, 65, 29};                  //contiune Cycle
-COORDINATES cancelRect = {69, 21, 126, 29};                    //cancel Cycle
- 
+COORDINATES cancelCycleRect = {69, 21, 126, 29};                    //cancel Cycle
+COORDINATES dateLine1 = {11,11,11,19};
+COORDINATES dateLine2 = {23,11,23,19};
+COORDINATES deviceMenu1 = {1,1,78,9};
+COORDINATES deviceMenu2 = {1,11,88,19};
+COORDINATES deviceMenu3 = {1,21,70,29};
+COORDINATES deviceMenu4 = {1,1,86,9};
+COORDINATES deviceMenu5 = {1,11,61,19};
+COORDINATES deviceMenu6 = {1,21,21,29};
+COORDINATES finishedRect = {12,21,50,29};
+COORDINATES cancelRect = {86,21,116,29};
+COORDINATES startCycleRect = {12,21,63,29};
 
 
 //PRIMARY FONT

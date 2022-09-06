@@ -95,9 +95,12 @@ extern "C" {
 #define setInverseDisplay 0xA6
 
 #define setDisplayON 0xAF
-    
+#define setDisplayOFF 0xAE
+
+#define TimeOutValue 30 // 30 seconds
 typedef enum
 {
+    START,
     SETUP,
     CLEAR,
     ABC,
@@ -105,6 +108,17 @@ typedef enum
     // Idle
     RUNCYCLE,
     MENU,
+    DEVICEMENU,
+    DEVICEMENU2,
+    AIRFILTER,
+    WATERFILTER,
+    PURGE,
+    DESCALE,
+    PURGING,
+    DESCALING,
+    COMPLETEDPURGE,
+    COMPLETEDDESCALE,
+    TIMEDATE,   // Subject to be removed
     // System Checks
     SYSTEMSCHECKS,
     PODMISSING,
@@ -122,10 +136,10 @@ typedef enum
     CANCELSEL1,
     COMPLETE,
     CANCELLED,
-    PURGE,
+    CANCELPURGE,
     LUBRICATION,
+    DISCONNECT,
             
-
 } DISPLAY_STATES;
 
 typedef enum
@@ -176,12 +190,13 @@ typedef struct {
     uint8_t y2;
 } COORDINATES;
 
-
+extern uint8_t selectedRow;
 //Functions for navigating I2C and States
 int I2C(uint8_t type, uint8_t data);          //returns 0 when in process
 void stateMachineLoop(DISPLAY_STATES  stateMachine);
 
 //Functions for Writing to the Screen
+void rewriteScreen();
 void writeData();
 void ssd1305_DrawPixel(uint8_t x, uint8_t y, int color);
 //void ssd1305_WriteChar(FontDef Font, char ch, int color);
@@ -193,6 +208,7 @@ void ssd1305_DrawRectangle(COORDINATES coordinates, int color);
 
 //Functions for sending Commands and Startup
 void sendCommand(uint8_t data); // returns 1 when done sending
+void sendData(uint8_t data); // made for scrolling unused
 void setStartPage(uint8_t pageAddr);    // Not Used
 void setStartColumn(uint8_t address);   // Not Used
 void setPageAddress(uint8_t startAddr, uint8_t endAddr);
