@@ -109,14 +109,14 @@
 #define POWER_BTN_Get()               (((PORT_REGS->GROUP[1].PORT_IN >> 11U)) & 0x01U)
 #define POWER_BTN_PIN                  PORT_PIN_PB11
 
-/*** Macros for LED_YEL pin ***/
-#define LED_YEL_Set()               (PORT_REGS->GROUP[1].PORT_OUTSET = ((uint32_t)1U << 12U))
-#define LED_YEL_Clear()             (PORT_REGS->GROUP[1].PORT_OUTCLR = ((uint32_t)1U << 12U))
-#define LED_YEL_Toggle()            (PORT_REGS->GROUP[1].PORT_OUTTGL = ((uint32_t)1U << 12U))
-#define LED_YEL_OutputEnable()      (PORT_REGS->GROUP[1].PORT_DIRSET = ((uint32_t)1U << 12U))
-#define LED_YEL_InputEnable()       (PORT_REGS->GROUP[1].PORT_DIRCLR = ((uint32_t)1U << 12U))
-#define LED_YEL_Get()               (((PORT_REGS->GROUP[1].PORT_IN >> 12U)) & 0x01U)
-#define LED_YEL_PIN                  PORT_PIN_PB12
+/*** Macros for EJECT pin ***/
+#define EJECT_Set()               (PORT_REGS->GROUP[1].PORT_OUTSET = ((uint32_t)1U << 12U))
+#define EJECT_Clear()             (PORT_REGS->GROUP[1].PORT_OUTCLR = ((uint32_t)1U << 12U))
+#define EJECT_Toggle()            (PORT_REGS->GROUP[1].PORT_OUTTGL = ((uint32_t)1U << 12U))
+#define EJECT_OutputEnable()      (PORT_REGS->GROUP[1].PORT_DIRSET = ((uint32_t)1U << 12U))
+#define EJECT_InputEnable()       (PORT_REGS->GROUP[1].PORT_DIRCLR = ((uint32_t)1U << 12U))
+#define EJECT_Get()               (((PORT_REGS->GROUP[1].PORT_IN >> 12U)) & 0x01U)
+#define EJECT_PIN                  PORT_PIN_PB12
 
 /*** Macros for HRTBEAT_LED pin ***/
 #define HRTBEAT_LED_Set()               (PORT_REGS->GROUP[0].PORT_OUTSET = ((uint32_t)1U << 14U))

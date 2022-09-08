@@ -741,7 +741,7 @@ children:
     - type: Values
       children:
       - type: User
-        attributes: {value: LED_YEL}
+        attributes: {value: EJECT}
   - type: String
     attributes: {id: PIN_25_FUNCTION_TYPE}
     children:

@@ -97,17 +97,17 @@ extern "C" {
 #define setDisplayON 0xAF
 #define setDisplayOFF 0xAE
 
-#define TimeOutValue 30 // 30 seconds
+#define TimeOutValue 600 // 60 seconds
+#define SystemChecksTime 5
+#define LubricationTime 30 // 30 seconds
+#define SafeDisconnectTime 30 // 30 seconds
 typedef enum
 {
     START,
     SETUP,
-    CLEAR,
     ABC,
-    POWERUP,
     // Idle
-    RUNCYCLE,
-    MENU,
+    IDLE,
     DEVICEMENU,
     DEVICEMENU2,
     AIRFILTER,
@@ -132,8 +132,7 @@ typedef enum
     CLEANING,
     DISINFECTION, 
     DRYING,
-    CANCELSEL0,
-    CANCELSEL1,
+    CANCELSEL,
     COMPLETE,
     CANCELLED,
     CANCELPURGE,
@@ -190,7 +189,16 @@ typedef struct {
     uint8_t y2;
 } COORDINATES;
 
+typedef struct {
+	uint8_t x;    
+	uint8_t y;   
+} XY;
+
 extern uint8_t selectedRow;
+extern uint8_t upFlg;
+extern uint8_t downFlg;
+extern int rowhighlighted;
+extern int screen;
 //Functions for navigating I2C and States
 int I2C(uint8_t type, uint8_t data);          //returns 0 when in process
 void stateMachineLoop(DISPLAY_STATES  stateMachine);
@@ -214,7 +222,7 @@ void setStartColumn(uint8_t address);   // Not Used
 void setPageAddress(uint8_t startAddr, uint8_t endAddr);
 void setColumnAddress(uint8_t startAddr, uint8_t endAddr);
 void setAddressingMode(uint8_t mode);
-
+void scrollEntireScreen();
     /* Provide C++ Compatibility */
 #ifdef __cplusplus
 }

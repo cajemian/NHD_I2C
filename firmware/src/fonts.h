@@ -47,7 +47,7 @@ extern "C" {
     // *****************************************************************************
     // *****************************************************************************
 char off []  = "OFF";
-char pwrUp[] = "POWER UP";
+char welcome[] = "WELCOME";
 char ABCs[] = "ABCDEFGHIJKLMNOPQRSTUVWXY";
 char nums[] = "Z0123456789";
 char runCycle[] = "RUN CYCLE";
@@ -69,14 +69,13 @@ char finished[] = "FINISHED";
 char cancel[] = "CANCEL";
 char startCycle[] = "START CYCLE";
 
-//System Checks
 char systemChecks[] = "STATUS:SYSTEMS CHECK";
 char systemChecks2[] = "CLEANING ABOUT TO START";
 char systemChecks3[] = "HOLD SELECT TO CANCEL CYCLE";   //TODO Repeat
 char systemFailed[] = "STATUS:SYSTEM CHECK FAILED";
 char pressSelect[] = "PRESS SELECT TO CONTINUE";
 char podMissing[] = "POD MISSING:INSERT POD";
-char podExhausted[] = "POD EXHUASTED:INSERT NEW POD";
+char podExhausted[] = "POD EXHUASTED;INSERT NEW POD";
 char caseMissing[] =  "CASE MISSING:INSERT CASE";
 char cathMissing[] = "CATHETER MISSING";    // Not done
 char cathExhausted[] = "CATHETER EXHAUSTED";// Not done
@@ -91,15 +90,15 @@ char complete[] = "STATUS:CLEANING COMPLETE";
 char dateTime[] = "09|01|2022-09:30";
 char pressEject[] = "PRESS EJECT TO USE CATHETER";
 char cancelCycle[] = "CANCEL THE CURRENT CYCLE?";
-char continueCycle[] = "CONTINUE CYCLE";
-char cancelCycle2[] = "CANCEL CYCLE";
+char yes[] = "YES";
+char no[] = "NO";
 //Cancelled-Purge Cycle
 char cancelled[] = "CYCLE CANCELLED";
 char purge[] = "COMPLETING PURGE CYCLE";
 char pleaseWait[] = "PLEASE WAIT";
 char empty[] = "EMPTY AND REFILL WATER";
 //Completed
-char processing[] = "STATUS: PROCESSING";
+char processing[] = "STATUS:PROCESSING";
 char disconnect[]  = "SAFE TO REMOVE CASE NOW";
 
 
@@ -107,8 +106,16 @@ char battery[] = "abc";
 char cath[] = "CATH-70|99";
 char pod[] = "POD-4|5";
 char rep[] = "REPROCESSED-08|29|2022";
-char time[] = "09:30";
+char time[] = "09;30";
 
+//String Coordinates
+XY row1 = {1, 2};
+XY row2 = {1, 12};
+XY row3 = {1, 22};
+
+XY menuRow1 = {2,2};
+XY menuRow2 = {2,12};
+XY menuRow3 = {2,22};
 //Coordinates for Lines
 COORDINATES runRect = {14, 22, 56, 30};
 COORDINATES menuRect = {90, 22, 111, 30};
@@ -117,16 +124,17 @@ COORDINATES cathLine = {116,0,116,8};
 COORDINATES monthLine = {71,12,71,20};
 COORDINATES yearLine = {83,12,83,20};
 COORDINATES horizontalLine = {0,10,127,10,};
-COORDINATES continueRect = {0, 21, 65, 29};                  //contiune Cycle
-COORDINATES cancelCycleRect = {69, 21, 126, 29};                    //cancel Cycle
+COORDINATES yesRect = {29, 21, 44, 29};                  //continue Cycle
+COORDINATES noRect = {88, 21, 98, 29};                    //cancel Cycle
 COORDINATES dateLine1 = {11,11,11,19};
 COORDINATES dateLine2 = {23,11,23,19};
-COORDINATES deviceMenu1 = {1,1,78,9};
-COORDINATES deviceMenu2 = {1,11,88,19};
-COORDINATES deviceMenu3 = {1,21,70,29};
-COORDINATES deviceMenu4 = {1,1,86,9};
-COORDINATES deviceMenu5 = {1,11,61,19};
-COORDINATES deviceMenu6 = {1,21,21,29};
+//Device Menu Highlights
+COORDINATES deviceMenu6 = {1,21,21,29}; // Rectangle for BACK bottom row
+COORDINATES rectScreen0[3] = {{1,1,78,9},{1,11,88,19},{1,21,70,29}}; 
+COORDINATES rectScreen1[3] = {{1,1,88,9},{1,11,70,19},{1,21,86,29}};
+COORDINATES rectScreen2[3] = {{1,1,70,9}, {1,11,86,19}, {1,21,61,29}};
+COORDINATES rectScreen3[3] = {{1,1,86,9}, {1,11,61,19}, {1,21,21,29}};
+///////////
 COORDINATES finishedRect = {12,21,50,29};
 COORDINATES cancelRect = {86,21,116,29};
 COORDINATES startCycleRect = {12,21,63,29};
@@ -160,8 +168,8 @@ static const uint16_t Font5x7 [] = {
 0xf000, 0x1000, 0x1000, 0x2000, 0x2000, 0x4000, 0x4000,   // 7
 0x6000, 0x9000, 0x9000, 0x6000, 0x9000, 0x9000, 0x6000,   // 8
 0x6000, 0x9000, 0x9000, 0x7000, 0x1000, 0x1000, 0x6000,   // 9
-0x0000, 0x0000, 0x8000, 0x0000, 0x8000, 0x0000, 0x0000,   // :
-0x0000, 0x0000, 0x2000, 0x0000, 0x2000, 0x2000, 0x4000,   // ;
+0x0000, 0x4000, 0x0000, 0x0000, 0x0000, 0x4000, 0x0000,   // :
+0x0000, 0x8000, 0x0000, 0x0000, 0x0000, 0x8000, 0x0000,   // ;
 0x0800, 0x1000, 0x2000, 0x4000, 0x2000, 0x1000, 0x0800,   // <
 0x0000, 0x0000, 0xf800, 0x0000, 0xf800, 0x0000, 0x0000,   // =
 0x4000, 0x2000, 0x1000, 0x0800, 0x1000, 0x2000, 0x4000,   // >

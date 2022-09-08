@@ -391,13 +391,13 @@ files:
   security: NON_SECURE
   type: HEADER
   userChecksum: AE3541D9EB0BC86EE90AC03EA3E1339F
-- generatedChecksum: 7B082EAE114CD2AC22C4949C2416C5FF
+- generatedChecksum: 2320B2444B2D65902DA20006E4CFDF08
   logicalPath: config/default/peripheral/port
   name: plib_port.h
   physicalPath: peripheral/port
   security: NON_SECURE
   type: HEADER
-  userChecksum: 7B082EAE114CD2AC22C4949C2416C5FF
+  userChecksum: 2320B2444B2D65902DA20006E4CFDF08
 - generatedChecksum: 1CE55E64E3F2FCF85973AB9429E48850
   logicalPath: config/default/peripheral/sercom/i2c_master
   name: plib_sercom2_i2c_master.h

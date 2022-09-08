@@ -260,31 +260,13 @@ void stateMachineLoop(DISPLAY_STATES  screenState){
             setAddressingMode(0x00);
             ssd1305_SetCursor(0,1);
             ssd1305_Fill();             // Clear Screen to start
-            writeData();
-
-        break;
-
-        case CLEAR: //  TODO Can delete
-            setPageAddress(0, 3);
-            setColumnAddress(4, 131);
-            setAddressingMode(0x00);
-            ssd1305_SetCursor(0,1);
-            ssd1305_Fill();
-            writeData();
-
-        break;
             
-        case POWERUP:   // TODO, Can Delete
-            setPageAddress(0, 3);
-            setColumnAddress(4, 131);
-            setAddressingMode(0x00);
-            ssd1305_Fill();
-
-            ssd1305_SetCursor(0,10);
-            drawString(pwrUp, 0);
-
+            ssd1305_SetCursor(46,12);
+            drawString(welcome, 0);
+            
             writeData();
-            break;
+
+        break;
             
         case ABC:   // Can Delete
             setPageAddress(0, 3);
@@ -303,11 +285,7 @@ void stateMachineLoop(DISPLAY_STATES  screenState){
             writeData();
             break;
             
-        case RUNCYCLE:
-            //setPageAddress(0, 3);
-            //setColumnAddress(4, 131);
-            //setAddressingMode(0x00);
-            //ssd1305_Fill();
+        case IDLE:
             rewriteScreen();
            
             ssd1305_SetCursor(0,0);
@@ -324,14 +302,26 @@ void stateMachineLoop(DISPLAY_STATES  screenState){
             ssd1305_SetCursor(106,13);
             drawString(time,0);
             
+            if(selectedRow == 0){   // Row 1
+               ssd1305_DrawRectangle(runRect, 0);   //Highlight and Invert Row 1
+               color = 1;   
+            }
+            else{
+                color = 0;
+            }
             ssd1305_SetCursor(15,23);
-            drawString(runCycle, 1);    //RUN CYCLE
+            drawString(runCycle,color);    // RUN CYCLE
             
-            ssd1305_SetCursor(91, 23);  
-            drawString(menu, 0);        //MENU
+            if(selectedRow == 1){   // Row 2
+                ssd1305_DrawRectangle(menuRect, 0); //Highlight and Invert Row 2
+                color = 1;
+            }else{
+                color = 0;
+            }
+            ssd1305_SetCursor(91, 23);
+            drawString(menu,color);  // MENU  
 
             //Shapes & Lines
-            ssd1305_DrawRectangle(runRect, 0);
             ssd1305_Line(podLine.x1, podLine.y1, podLine.x2, podLine.y2, 0);   //Divider
             ssd1305_Line(cathLine.x1, cathLine.y1, cathLine.x2, cathLine.y2, 0);   //Divider
             ssd1305_Line(horizontalLine.x1, horizontalLine.y1, horizontalLine.x2, horizontalLine.y2, 0);   //Horizontal Line
@@ -339,128 +329,132 @@ void stateMachineLoop(DISPLAY_STATES  screenState){
             ssd1305_Line(yearLine.x1, yearLine.y1, yearLine.x2, yearLine.y2, 0);   //Divider
             
             writeData();
-            break;
-            
-        case MENU:
-            //setPageAddress(0, 3);
-            //setColumnAddress(4, 131);
-            //setAddressingMode(0x00);
-            //ssd1305_Fill();
-            rewriteScreen();
-
-            ssd1305_SetCursor(0,0);
-            drawString(battery,0);      //Battery Symbols
-
-            ssd1305_SetCursor(32,1);
-            drawString(pod,0);          //POD-x|x
-            
-            ssd1305_SetCursor(81,1);
-            drawString(cath,0);         //CATH-xx|xx
-            
-            ssd1305_SetCursor(0,13);
-            drawString(rep,0);          //REPROCESSED-xx|xx|xxxx xx:xx
-            ssd1305_SetCursor(106,13);
-            drawString(time,0);
-            
-            ssd1305_SetCursor(15,23);
-            drawString(runCycle, 0);    //RUN CYCLE
-            
-            ssd1305_SetCursor(91, 23);  
-            drawString(menu, 1);        //MENU
-
-            //Shapes & Lines
-            ssd1305_DrawRectangle(menuRect, 0);
-            ssd1305_Line(podLine.x1, podLine.y1, podLine.x2, podLine.y2, 0);   //Divider
-            ssd1305_Line(cathLine.x1, cathLine.y1, cathLine.x2, cathLine.y2, 0);   //Divider
-            ssd1305_Line(horizontalLine.x1, horizontalLine.y1, horizontalLine.x2, horizontalLine.y2, 0);   //Horizontal Line
-
-            writeData();
-            break;
-            
+            break;          
         case DEVICEMENU:
-            //setPageAddress(0, 3);
-            //setColumnAddress(4, 131);
-            //setAddressingMode(0x00);
-            //ssd1305_Fill();
+            
             rewriteScreen();
-            
-            if(selectedRow == 0){   // Row 1
-               ssd1305_DrawRectangle(deviceMenu1, 0);   //Highlight and Invert Row 1
-               color = 1;   
+            color = 0;
+            int rowColor[3] = {0, 0 ,0};
+            switch(screen){
+                case 0:
+                    if(upFlg == 1 && rowhighlighted == 0){
+                        //nothing
+                    }
+                    else if(upFlg == 1 && rowhighlighted <= 2){
+                        rowhighlighted--;
+                    }
+                    else if(downFlg == 1 && rowhighlighted >= 2){
+                        screen = 1;
+                        rowhighlighted = 2;
+                    }
+                    else if(downFlg == 1 && rowhighlighted < 2){
+                        rowhighlighted++;
+                    }
+                    rowColor[rowhighlighted] = 1;   //invert color of row highlighted
+                    
+                    ssd1305_SetCursor(menuRow1.x, menuRow1.y);
+                    drawString(changeAir,rowColor[0]);    // CHANGE AIR FILTER
+                    ssd1305_SetCursor(menuRow2.x, menuRow2.y);
+                    drawString(changeWater,rowColor[1]);  // CHANGE WATER FILTER
+                    ssd1305_SetCursor(menuRow3.x, menuRow3.y);
+                    drawString(runPurge,rowColor[2]); // RUN PURGE CYCLE 
+                    
+                    ssd1305_DrawRectangle(rectScreen0[rowhighlighted], 0); //Highlight and Invert Row 2
+                    
+                    break;
+                case 1:
+                    if(upFlg == 1 && rowhighlighted == 0){
+                        screen = 0;
+                        rowhighlighted = 0;
+                    }
+                    else if(upFlg == 1 && rowhighlighted <= 2){
+                        rowhighlighted--;
+                    }
+                    else if(downFlg == 1 && rowhighlighted >= 2){
+                        screen = 2;
+                        rowhighlighted = 2;
+                    }
+                    else if(downFlg == 1 && rowhighlighted < 2){
+                        rowhighlighted++;
+                    }
+                    rowColor[rowhighlighted] = 1;   //invert color of row highlighted
+                    
+                    ssd1305_SetCursor(menuRow1.x, menuRow1.y);
+                    drawString(changeWater,rowColor[0]);    // CHANGE WATER FILTER
+                    ssd1305_SetCursor(menuRow2.x, menuRow2.y);
+                    drawString(runPurge,rowColor[1]);  // RUN PURGE CYCLE 
+                    ssd1305_SetCursor(menuRow3.x, menuRow3.y);
+                    drawString(runDescale,rowColor[2]); // RUN DE-SCALE SELECT 
+                    
+                    ssd1305_DrawRectangle(rectScreen1[rowhighlighted], 0); //Highlight and Invert Row 2
+                    
+                    break;
+                case 2:
+                    if(upFlg == 1 && rowhighlighted == 0){
+                        screen = 1;
+                        rowhighlighted = 0;
+                    }
+                    else if(upFlg == 1 && rowhighlighted <= 2){
+                        rowhighlighted--;
+                    }
+                    else if(downFlg == 1 && rowhighlighted >= 2){
+                        screen = 3;
+                        rowhighlighted = 2;
+                    }
+                    else if(downFlg == 1 && rowhighlighted < 2){
+                        rowhighlighted++;
+                    }
+                    rowColor[rowhighlighted] = 1;   //invert color of row highlighted
+                    
+                    ssd1305_SetCursor(menuRow1.x, menuRow1.y);
+                    drawString(runPurge,rowColor[0]);    // RUN PURGE CYCLE 
+                    ssd1305_SetCursor(menuRow2.x, menuRow2.y);
+                    drawString(runDescale,rowColor[1]);  // RUN DE-SCALE SELECT
+                    ssd1305_SetCursor(menuRow3.x, menuRow3.y);
+                    drawString(setDateTime,rowColor[2]);  // SET TIME-DATE
+                    
+                    ssd1305_DrawRectangle(rectScreen2[rowhighlighted], 0); //Highlight and Invert Row 2
+                    
+                    break;
+                case 3:
+                    if(upFlg == 1 && rowhighlighted == 0){
+                        screen = 2;
+                        rowhighlighted = 0;
+                    }
+                    else if(upFlg == 1 && rowhighlighted <= 2){
+                        rowhighlighted--;
+                    }
+                    else if(downFlg == 1 && rowhighlighted >= 2){
+                        
+                    }
+                    else if(downFlg == 1 && rowhighlighted < 2){
+                        rowhighlighted++;
+                    }
+                    rowColor[rowhighlighted] = 1;   //invert color of row highlighted
+                    
+                    ssd1305_SetCursor(menuRow1.x, menuRow1.y);
+                    drawString(runDescale,rowColor[0]);    // RUN DE-SCALE SELECT
+                    ssd1305_SetCursor(menuRow2.x, menuRow2.y);
+                    drawString(setDateTime,rowColor[1]);  // SET TIME-DATE
+                    ssd1305_SetCursor(menuRow3.x, menuRow3.y);
+                    drawString(back,rowColor[2]);  // back
+                    
+                    ssd1305_DrawRectangle(rectScreen3[rowhighlighted], 0); //Highlight and Invert Row 2
+                    break;
             }
-            else{
-                color = 0;
-            }
-            ssd1305_SetCursor(2,2);
-            drawString(changeAir,color);    // CHANGE AIR FILTER 
-            
-            if(selectedRow == 1){   // Row 2
-                ssd1305_DrawRectangle(deviceMenu2, 0); //Highlight and Invert Row 2
-                color = 1;
-            }else{
-                color = 0;
-            }
-            ssd1305_SetCursor(2,12);
-            drawString(changeWater,color);  // CHANGE WATER FILTER
-            
-            if(selectedRow == 2){   // Row 3
-                ssd1305_DrawRectangle(deviceMenu3, 0); //Highlight and Invert Row 3
-                color = 1;
-            }else{
-                color = 0;
-            }
-            ssd1305_SetCursor(2,22);
-            drawString(runPurge,color); // RUN PURGE CYCLE         
-            
             
             writeData();
-            break;
-            
-        case DEVICEMENU2:
-            //setPageAddress(0, 3);
-            //setColumnAddress(4, 131);
-            //setAddressingMode(0x00);
-            //ssd1305_Fill();
-            rewriteScreen();
-            
-            if(selectedRow == 0){   // Row 1
-               ssd1305_DrawRectangle(deviceMenu4, 0); //Highlight and Invert Row 1
-               color = 1;   
-            }
-            else{
-                color = 0;
-            }
-            ssd1305_SetCursor(2,2);
-            drawString(runDescale,color);  // RUN DE-SCALE SELECT
-            
-            if(selectedRow == 1){ // Row 2
-                ssd1305_DrawRectangle(deviceMenu5, 0); //Highlight and Invert Row 2
-                color = 1;
-            }else{
-                color = 0;
-            }
-            ssd1305_SetCursor(2,12);
-            drawString(setDateTime,color);  // SET TIME-DATE
-            
-            if(selectedRow == 2){ // Row 3
-                ssd1305_DrawRectangle(deviceMenu6, 0); //Highlight and Invert Row 3
-                color = 1;
-            }else{
-                color = 0;
-            }
-            ssd1305_SetCursor(2,22);
-            drawString(back,color);     //BACK
-                       
-            writeData();
+            upFlg = 0;
+            downFlg = 0;
             break;
             
         case AIRFILTER:
             rewriteScreen();
             
-            ssd1305_SetCursor(1,2);
+            ssd1305_SetCursor(row1.x,row1.y);
             drawString(changeAir,0);    // CHANGE AIR FILTER"
             
-            ssd1305_SetCursor(1,12);
+            ssd1305_SetCursor(row2.x,row2.y);
             drawString(removePanel,0);  // REMOVE PANEL 1 AND REPLACE
             
             if(selectedRow == 0){
@@ -488,10 +482,10 @@ void stateMachineLoop(DISPLAY_STATES  screenState){
         case WATERFILTER:
             rewriteScreen();
             
-            ssd1305_SetCursor(1,2);
+            ssd1305_SetCursor(row1.x, row1.y);
             drawString(changeWater,0); // CHANGE WATER FILTER
             
-            ssd1305_SetCursor(1,12);
+            ssd1305_SetCursor(row2.x, row2.y);
             drawString(removePanel,0); // REMOVE PANEL 1 AND REPLACE
             
             if(selectedRow == 0){
@@ -519,7 +513,7 @@ void stateMachineLoop(DISPLAY_STATES  screenState){
         case PURGE:
             rewriteScreen();
             
-            ssd1305_SetCursor(1,2);
+            ssd1305_SetCursor(row1.x, row1.y);
             drawString(runPurge,0); // RUN PURGE CYCLE
             
             if(selectedRow == 0){
@@ -547,10 +541,10 @@ void stateMachineLoop(DISPLAY_STATES  screenState){
         case DESCALE:
             rewriteScreen();
             
-            ssd1305_SetCursor(1,2);
+            ssd1305_SetCursor(row1.x, row1.y);
             drawString(loadDescale,0); // LOAD DE-SCALE FLUID
             
-            ssd1305_SetCursor(1,12);
+            ssd1305_SetCursor(row2.x, row2.y);
             drawString(runDescale,0); // RUN DE-SCALE CYCLE
             
             if(selectedRow == 0){
@@ -578,11 +572,8 @@ void stateMachineLoop(DISPLAY_STATES  screenState){
         case PURGING:
             rewriteScreen();
             
-            ssd1305_SetCursor(1,2);
-            drawString(purging, 0);    // STATUS:PURGING
-            
-            ssd1305_SetCursor(1,22);
-            drawString(holdCancel, 0);   // HOLD SELECT TO CANCEL CYCLE
+            ssd1305_SetCursor(row1.x, row1.y);
+            drawString(purging, 0);    // STATUS:PURGING  
 
             writeData();
             break;
@@ -590,11 +581,8 @@ void stateMachineLoop(DISPLAY_STATES  screenState){
         case DESCALING:
             rewriteScreen();
             
-            ssd1305_SetCursor(1,2);
+            ssd1305_SetCursor(row1.x, row1.y);
             drawString(descaling, 0);    // STATUS:DESCALING
-            
-            ssd1305_SetCursor(1,22);
-            drawString(holdCancel, 0);   // HOLD SELECT TO CANCEL CYCLE
 
             writeData();
             break;
@@ -602,7 +590,7 @@ void stateMachineLoop(DISPLAY_STATES  screenState){
         case COMPLETEDPURGE:
             rewriteScreen();
 
-            ssd1305_SetCursor(1,2);
+            ssd1305_SetCursor(row1.x, row1.y);
             drawString(completedPurge, 0); // PURGE CYCLE COMPLETE
             
             ssd1305_SetCursor(1,22);
@@ -613,7 +601,7 @@ void stateMachineLoop(DISPLAY_STATES  screenState){
         case COMPLETEDDESCALE:
             rewriteScreen();
 
-            ssd1305_SetCursor(1,2);
+            ssd1305_SetCursor(row1.x, row1.y);
             drawString(descalePurge, 0); // DESCALE CYCLE COMPLETE     
             
             ssd1305_SetCursor(1,22);
@@ -640,10 +628,10 @@ void stateMachineLoop(DISPLAY_STATES  screenState){
         case SYSTEMSCHECKS:
             rewriteScreen();
 
-            ssd1305_SetCursor(1,2);
+            ssd1305_SetCursor(row1.x, row1.y);
             drawString(systemChecks, 0);    // STATUS:SYSTEMS CHECK
             
-            ssd1305_SetCursor(1,12);
+            ssd1305_SetCursor(row2.x, row2.y);
             drawString(systemChecks2, 0);   // CLEANING ABOUT TO START
             
             ssd1305_SetCursor(1,22);
@@ -655,10 +643,10 @@ void stateMachineLoop(DISPLAY_STATES  screenState){
         case PODMISSING:
             rewriteScreen();
 
-            ssd1305_SetCursor(1,2);
+            ssd1305_SetCursor(row1.x, row1.y);
             drawString(systemFailed, 0);    // STATUS:SYSTEM CHECK FAILED
             
-            ssd1305_SetCursor(1,12);
+            ssd1305_SetCursor(row2.x, row2.y);
             drawString(podMissing, 0);   // POD MISSING:INSERT POD
             
             ssd1305_SetCursor(1,22);
@@ -670,10 +658,10 @@ void stateMachineLoop(DISPLAY_STATES  screenState){
         case PODEXHAUSTED:
             rewriteScreen();
 
-            ssd1305_SetCursor(1,2);
+            ssd1305_SetCursor(row1.x, row1.y);
             drawString(systemFailed, 0);    // STATUS:SYSTEM CHECK FAILED
             
-            ssd1305_SetCursor(1,12);
+            ssd1305_SetCursor(row2.x, row2.y);
             drawString(podExhausted, 0);   // POD EXHUASTED:INSERT NEW POD
             
             ssd1305_SetCursor(1,22);
@@ -685,10 +673,10 @@ void stateMachineLoop(DISPLAY_STATES  screenState){
         case CASEMISSING:
             rewriteScreen();
 
-            ssd1305_SetCursor(1,2);
+            ssd1305_SetCursor(row1.x, row1.y);
             drawString(systemFailed, 0);    // STATUS:SYSTEM CHECK FAILED
             
-            ssd1305_SetCursor(1,12);
+            ssd1305_SetCursor(row2.x, row2.y);
             drawString(caseMissing, 0);   // POD EXHUASTED:INSERT NEW POD
             
             ssd1305_SetCursor(1,22);
@@ -700,10 +688,10 @@ void stateMachineLoop(DISPLAY_STATES  screenState){
         case CATHMISSING:
             rewriteScreen();
 
-            ssd1305_SetCursor(1,2);
+            ssd1305_SetCursor(row1.x, row1.y);
             drawString(systemFailed, 0);    // STATUS:SYSTEM CHECK FAILED
             
-            ssd1305_SetCursor(1,12);
+            ssd1305_SetCursor(row2.x, row2.y);
             drawString(cathMissing, 0);   // CATHETER MISSING
             
             ssd1305_SetCursor(1,22);
@@ -715,10 +703,10 @@ void stateMachineLoop(DISPLAY_STATES  screenState){
         case CATHEXHAUSTED:
             rewriteScreen();
 
-            ssd1305_SetCursor(1,2);
+            ssd1305_SetCursor(row1.x, row1.y);
             drawString(systemFailed, 0);    // STATUS:SYSTEM CHECK FAILED
             
-            ssd1305_SetCursor(1,12);
+            ssd1305_SetCursor(row2.x, row2.y);
             drawString(cathExhausted, 0);   // CATHETER EXHAUSTED
             
             ssd1305_SetCursor(1,22);
@@ -730,10 +718,10 @@ void stateMachineLoop(DISPLAY_STATES  screenState){
         case LEAKING:
             rewriteScreen();
 
-            ssd1305_SetCursor(1,2);
+            ssd1305_SetCursor(row1.x, row1.y);
             drawString(systemFailed, 0);    // STATUS:SYSTEM CHECK FAILED
             
-            ssd1305_SetCursor(1,12);
+            ssd1305_SetCursor(row2.x, row2.y);
             drawString(leaking, 0);        // LEAK CHECK FAILED
             
             ssd1305_SetCursor(1,22);
@@ -745,10 +733,10 @@ void stateMachineLoop(DISPLAY_STATES  screenState){
         case WASTEWATERRESERVOIR:
             rewriteScreen();
 
-            ssd1305_SetCursor(1,2);
+            ssd1305_SetCursor(row1.x, row1.y);
             drawString(systemFailed, 0);    // STATUS:SYSTEM CHECK FAILED
             
-            ssd1305_SetCursor(1,12);
+            ssd1305_SetCursor(row2.x, row2.y);
             drawString(reservoirCheck, 0);   // RESERVOIR CHECK FAILED
             
             ssd1305_SetCursor(1,22);
@@ -760,7 +748,7 @@ void stateMachineLoop(DISPLAY_STATES  screenState){
         case CLEANING:
             rewriteScreen();
 
-            ssd1305_SetCursor(1,2);
+            ssd1305_SetCursor(row1.x, row1.y);
             drawString(cleaning, 0);    // STATUS:CLEANING
 
             ssd1305_SetCursor(1,22);
@@ -772,7 +760,7 @@ void stateMachineLoop(DISPLAY_STATES  screenState){
         case DISINFECTION:
             rewriteScreen();
             
-            ssd1305_SetCursor(1,2);
+            ssd1305_SetCursor(row1.x, row1.y);
             drawString(disinfect, 0);    // STATUS:DISINFECTION
             
             ssd1305_SetCursor(1,22);
@@ -784,7 +772,7 @@ void stateMachineLoop(DISPLAY_STATES  screenState){
         case DRYING:
             rewriteScreen();
             
-            ssd1305_SetCursor(1,2);
+            ssd1305_SetCursor(row1.x, row1.y);
             drawString(drying, 0);    // STATUS:DRYING
             
             ssd1305_SetCursor(1,22);
@@ -793,49 +781,42 @@ void stateMachineLoop(DISPLAY_STATES  screenState){
             writeData();
             break;
             
-        case CANCELSEL0:    //TODO Combine
+        case CANCELSEL:    //TODO Combine
             rewriteScreen();
 
-            ssd1305_SetCursor(1,2);
+            ssd1305_SetCursor(row1.x, row1.y);
             drawString(cancelCycle, 0);    // CANCEL THE CURRENT CYCLE?
 
-            ssd1305_SetCursor(1,22);
-            drawString(continueCycle, 1);    // CONTINUE CYCLE
+            if(selectedRow == 0){
+               ssd1305_DrawRectangle(yesRect, 0); // Highlight and Invert
+               color = 1;   
+            }
+            else{
+                color = 0;
+            }
+            ssd1305_SetCursor(30,22);
+            drawString(yes, color);    // CONTINUE CYCLE
             
-            ssd1305_SetCursor(70,22);
-            drawString(cancelCycle2, 0);   // CANCEL CYCLE
+            if(selectedRow == 1){
+               ssd1305_DrawRectangle(noRect, 0); // Highlight and Invert
+               color = 1;   
+            }
+            else{
+                color = 0;
+            }
+            ssd1305_SetCursor(89,22);
+            drawString(no, color);   // CANCEL CYCLE
             
-            //Draw Rectangle
-            ssd1305_DrawRectangle(continueRect, 0);
-
             writeData();
             break;
-            
-        case CANCELSEL1:
-            rewriteScreen();
-
-            ssd1305_SetCursor(1,2);
-            drawString(cancelCycle, 0);    // CANCEL THE CURRENT CYCLE?
-
-            ssd1305_SetCursor(1,22);
-            drawString(continueCycle, 0);    // CONTINUE CYCLE
-            
-            ssd1305_SetCursor(70,22);
-            drawString(cancelCycle2, 1);   // CANCEL CYCLE
-            
-            //Draw Rectangle
-            ssd1305_DrawRectangle(cancelCycleRect, 0);
-
-            writeData();
-            break;
-            
+                
         case COMPLETE:
             rewriteScreen();
 
-            ssd1305_SetCursor(1,2);
+            ssd1305_SetCursor(row1.x, row1.y);
             drawString(complete, 0);    // STATUS:CLEANING COMPLETE
 
-            ssd1305_SetCursor(1,12);
+            ssd1305_SetCursor(row2.x, row2.y);
             drawString(dateTime, 0);    // DATE & TIME
             
             ssd1305_SetCursor(1,22);
@@ -851,10 +832,10 @@ void stateMachineLoop(DISPLAY_STATES  screenState){
         case CANCELLED:
             rewriteScreen();
 
-            ssd1305_SetCursor(1,2);
+            ssd1305_SetCursor(row1.x, row1.y);
             drawString(cancelled, 0);    // CYCLE CANCELLED
 
-            ssd1305_SetCursor(1,12);
+            ssd1305_SetCursor(row2.x, row2.y);
             drawString(purge, 0);    // COMPLETING PURGE CYCLE
             
             ssd1305_SetCursor(1,22);
@@ -866,10 +847,10 @@ void stateMachineLoop(DISPLAY_STATES  screenState){
         case CANCELPURGE:
             rewriteScreen();
 
-            ssd1305_SetCursor(1,2);
+            ssd1305_SetCursor(row1.x, row1.y);
             drawString(cancelled, 0);    // CYCLE CANCELLED
 
-            ssd1305_SetCursor(1,12);
+            ssd1305_SetCursor(row2.x, row2.y);
             drawString(empty, 0);    // EMPTY AND REFILL WATER
             
             ssd1305_SetCursor(1,22);
@@ -881,7 +862,7 @@ void stateMachineLoop(DISPLAY_STATES  screenState){
         case LUBRICATION:
             rewriteScreen();
             
-            ssd1305_SetCursor(1,12);
+            ssd1305_SetCursor(12,12);     // Center
             drawString(processing, 0);    // STATUS: PROCESSING
 
             writeData();
@@ -999,9 +980,9 @@ void drawString(char *string, int color){
     for(int i = 0; i < size; i++){
         if(string[i] == 'M' || string[i] == 'W' || string[i] ==  '-'){
             ssd1305_WriteChar(Font_6x7, string[i], color);
-        }else if(string[i] == 'I' || string[i] == 'T' || string[i] == 'c'){
+        }else if(string[i] == 'I' || string[i] == 'T' || string[i] == 'c' || string[i] == ':'){
             ssd1305_WriteChar(Font_4x7, string[i], color);
-        }else if(string[i] == '|' || string[i] == ':' || string[i] == 32){
+        }else if(string[i] == '|' || string[i] == 32 || string[i] == ';'){
             ssd1305_WriteChar(Font_2x7, string[i], color);
         }else{
             ssd1305_WriteChar(Font_5x7, string[i], color);
@@ -1163,6 +1144,26 @@ void setAddressingMode(uint8_t mode)
 {
   sendCommand(0x20);
   sendCommand(mode);
+}
+
+/***************************** setAddressingMode() **********************
+ * Description: 
+ * Inputs: uint8_t
+ * Outputs: None
+ ****************************************************************/
+void scrollEntireScreen()
+{
+  setStartPage(0);
+
+  sendCommand(0x29); // Right horizontal scroll
+  sendCommand(0x00);
+  sendCommand(0x00);
+  //sendCommand(0x01); // Scroll by 1 column
+  //sendCommand(0x00); // Define PAGE0 as start page address
+  sendCommand(0x11); // Set time interval between each scroll step as 6 frames
+  sendCommand(0x03); // Define PAGE3 as end page address
+  sendCommand(0x0a);
+  sendCommand(0x2F); // Activate scrolling
 }
 
 /* *****************************************************************************

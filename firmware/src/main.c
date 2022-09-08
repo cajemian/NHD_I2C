@@ -33,6 +33,11 @@ uint8_t drawLine = 0;
 uint8_t pageAddress = 0;        //Page 0 out of 4
 uint8_t colAddress = 4;         //Global address of column pixel, Start with 4
 uint8_t selectedRow = 0;
+uint8_t previousRow = 0;
+uint8_t upFlg = 0;
+uint8_t downFlg = 0;
+int rowhighlighted = 0;
+int screen = 0;
 //Flags to indicate pass/fail of system checks before Cleaning Cycle
 typedef struct
 {
@@ -118,10 +123,6 @@ int main ( void )
     {   
          /* Maintain state machines of all polled MPLAB Harmony modules. */
         SYS_Tasks ( );
-
-        if(CASE_MISS_Get() == 1){       //TODO implement Case Missing/Pod Missing
-            LED_YEL_Toggle();
-        }
         
         //Get Button Press Status
         powerButton = buttonPress(powerButton, POWER_BTN_PIN);
@@ -163,105 +164,97 @@ int main ( void )
             counter1S++;        //count to 1S   
         }
         //1 s Condition
-        if(counter1S >= 10){
+        if(counter1S >= 1){
             switch(stateMachine){
                 case START:                     // No screen, wait for Power Button to transition
                     if(powerButton.Flag == 1){
                         stateMachine = SETUP;
+                        timeofstate = 0;
                     }
-                    break;
-                case CLEAR: // TODO Can remove this
                     break;
                 case ABC:   // TODO Can remove this
                     if(timeofstate >= 5){
-                        stateMachine = RUNCYCLE;
+                        stateMachine = IDLE;
                     }
                     break;
                 case SETUP:     // Inital setup for display
-                    if(timeofstate >= 3){
-                        stateMachine = RUNCYCLE;
+                    if(timeofstate >= 5){
+                        stateMachine = IDLE;
                     }
                     break;
-                case RUNCYCLE:         //TODO combine RunCycle and Menu?
-                    if(NavAButton.Flag == 1 || NavBButton.Flag == 1){
-                        stateMachine = MENU;
+                case IDLE:
+                    if(NavAButton.Flag == 1 || NavBButton.Flag == 1){   //Toggle Selections
+                        if(selectedRow == 1){
+                            selectedRow = 0;
+                        }else if(selectedRow == 0){
+                            selectedRow = 1;
+                        }
                     }
+                    
                     if(SelButton.Flag == 1){
-                        stateMachine = SYSTEMSCHECKS;   //  Move on to System Checks
-                        timeofstate = 0;                //  Reset time of state
+                        if(selectedRow == 0){   // Row 1
+                            stateMachine = SYSTEMSCHECKS; //De-scale Cycle selected, jump to screen
+                            timeofstate = 0;
+                            selectedRow = 0;
+                        }else if(selectedRow == 1){ // Row 2
+                            stateMachine = DEVICEMENU;    //Time Date selected, jump to screen
+                            rowhighlighted = 0;
+                            selectedRow = 0;
+                            screen = 0;
+                        }              //  Reset time of state
+                    }
+                    
+                    if(EjectButton.Flag == 1){
+                        stateMachine = DISCONNECT;
+                        timeofstate = 0;
                     }
                     break;
-                case MENU:
-                    if(NavAButton.Flag == 1 || NavBButton.Flag == 1){
-                        stateMachine = RUNCYCLE;
-                    }
-                    if(SelButton.Flag == 1){
-                        stateMachine = DEVICEMENU;       // TODO Move on to Menu
-                        timeofstate = 0;                      
-                    }
-                    break;
+
                 case DEVICEMENU:    // TODO implement Vertical Scrolling
                     if(NavAButton.Flag == 1){   //Scroll Up
+                        upFlg = 1;
                         if(selectedRow > 0){
                             selectedRow--;      //Row selected decreases
                         }
                     }
                     
-                    if(NavBButton.Flag == 1){   //Scroll Down
-                        if(selectedRow < 3){   
+                    if(NavBButton.Flag == 1){   //Scroll 
+                        downFlg = 1;
+                        if(selectedRow < 6){   
                             selectedRow++;      //Row selected increases
-                            if(selectedRow == 3){ // Overflow, go to next device menu
-                                stateMachine = DEVICEMENU2; // Jump to page 2
-                                selectedRow = 0;
-                            }
                         }
                     }
                     
                     if(SelButton.Flag == 1){
                         if(selectedRow == 0){   //Row 1
                             stateMachine = AIRFILTER;   //Change Air Filter selected, jump to screen
+                            previousRow = selectedRow;
                             selectedRow = 0;
                         }else if(selectedRow == 1){ // Row 2
                             stateMachine = WATERFILTER; //Change Water Filter selected, jump to screen
+                            previousRow = selectedRow;
                             selectedRow = 0;
                         }else if(selectedRow == 2){ // Row 3
                             stateMachine = PURGE;   //Purge Cycle selected, jump to screen
+                            previousRow = selectedRow;
+                            selectedRow = 0;
+                        }else if(selectedRow == 3){ // Row 3
+                            stateMachine = DESCALE;   //Purge Cycle selected, jump to screen
+                            previousRow = selectedRow;
+                            selectedRow = 0;
+                        }else if(selectedRow == 4){ // Row 3
+                            stateMachine = TIMEDATE;   //Purge Cycle selected, jump to screen
+                            previousRow = selectedRow;
+                            selectedRow = 0;
+                        }else if(selectedRow == 5){ // Row 5
+                            stateMachine = IDLE;   
+                            previousRow = selectedRow;
                             selectedRow = 0;
                         }
                         timeofstate = 0;        //TODO important? Needed? Should this be at the end of every switch                  
                     }
                     break;
-                case DEVICEMENU2:
-                    if(NavAButton.Flag == 1){   // Scroll Up
-                        if(selectedRow > 0){
-                            selectedRow--;  //Row selected decreases
-                        }
-                        else if(selectedRow == 0){
-                            stateMachine = DEVICEMENU;  //Underflow, go to previous menu screen
-                            selectedRow = 2;
-                        }
-                    }
-                    
-                    if(NavBButton.Flag == 1){       //Scroll Down
-                        if(selectedRow < 2){
-                            selectedRow++;  // Row selected decreases
-                        }
-                    }
-                    
-                    if(SelButton.Flag == 1){
-                        if(selectedRow == 0){   // Row 1
-                            stateMachine = DESCALE; //De-scale Cycle selected, jump to screen
-                            selectedRow = 0;
-                        }else if(selectedRow == 1){ // Row 2
-                            stateMachine = TIMEDATE;    //Time Date selected, jump to screen
-                            selectedRow = 0;
-                        }else if(selectedRow == 2){ //Row 3
-                            stateMachine = MENU;    //Back selected, go back to Menu
-                            selectedRow = 0;
-                        }
-                        timeofstate = 0;                      
-                    }
-                    break;
+                
                 case AIRFILTER:
                     if(NavAButton.Flag == 1 || NavBButton.Flag == 1){   //Toggle Selections
                         if(selectedRow == 1){
@@ -273,11 +266,12 @@ int main ( void )
                     
                     if(SelButton.Flag == 1){
                         if(selectedRow == 0){
-                            stateMachine = RUNCYCLE;    // Finished, go back to IDLE screen
+                            stateMachine = IDLE;    // Finished, go back to IDLE screen
                             selectedRow = 0;
                         }else if(selectedRow == 1){
                             stateMachine = DEVICEMENU;  // Cancel, go back to device menu
-                            selectedRow = 0;        // Selected Row should be previous selection
+                            selectedRow = previousRow;
+                            //selectedRow = 0;        // Selected Row should be previous selection
                         }
                         timeofstate = 0;                      
                     }
@@ -294,11 +288,11 @@ int main ( void )
                     
                     if(SelButton.Flag == 1){
                         if(selectedRow == 0){
-                            stateMachine = RUNCYCLE;    // Finished, go back to IDLE screen
+                            stateMachine = IDLE;    // Finished, go back to IDLE screen
                             selectedRow = 0;
                         }else if(selectedRow == 1){
                             stateMachine = DEVICEMENU; // Cancel, go back to device menu
-                            selectedRow = 1;        // Selected Row should be previous selection
+                            selectedRow = previousRow;        // Selected Row should be previous selection
                         }
                         timeofstate = 0;                      
                     }
@@ -317,7 +311,7 @@ int main ( void )
                             selectedRow = 0;
                         }else if(selectedRow == 1){
                             stateMachine = DEVICEMENU;  // Cancel, go back to device menu
-                            selectedRow = 2;        // Selected Row should be previous selection
+                            selectedRow = previousRow;        // Selected Row should be previous selection
                         }
                         timeofstate = 0;                      
                     }
@@ -335,27 +329,19 @@ int main ( void )
                             stateMachine = DESCALING;        //Run De-scale Cycle
                             selectedRow = 0;
                         }else if(selectedRow == 1){
-                            stateMachine = DEVICEMENU2; // Cancel, go back to device menu
-                            selectedRow = 0;        // Selected Row should be previous selection
+                            stateMachine = DEVICEMENU; // Cancel, go back to device menu
+                            selectedRow = previousRow;        // Selected Row should be previous selection
                         }
                         timeofstate = 0;                      
                     }
                     break;
                 case PURGING:
-                    if(SelButton.Flag == 1){    // Hold Select to Cancel, TODO instance of HOLD Button 3 Seconds
-                        stateMachine = CANCELSEL0;
-                        previousState = PURGING;
-                    }
                     if(timeofstate >= 5){               //TODO random value to trigger change
                         stateMachine = COMPLETEDPURGE;
                         timeofstate = 0;
                     }
                     break;
                 case DESCALING:
-                    if(SelButton.Flag == 1){    // Hold Select to Cancel, TODO instance of HOLD Button 3 Seconds
-                        stateMachine = CANCELSEL0;
-                        previousState = DESCALING;
-                    }
                     if(timeofstate >= 5){               //TODO random value to trigger change
                         stateMachine = COMPLETEDDESCALE;
                         timeofstate = 0;
@@ -363,94 +349,96 @@ int main ( void )
                     break;
                 case COMPLETEDPURGE:
                     if(SelButton.Flag == 1){    // Purge Cycle Completed
-                        stateMachine = RUNCYCLE;    // Jump to IDLE screen
+                        stateMachine = IDLE;    // Jump to IDLE screen
                     }
                     break;
                 case COMPLETEDDESCALE:
                     if(SelButton.Flag == 1){    // De-scale cycle Completed
-                        stateMachine = RUNCYCLE;    // Jump to IDLE screen
+                        stateMachine = IDLE;    // Jump to IDLE screen
                     }
                     break;
                 case TIMEDATE:  // TODO, Functionality needs to be decided
                     if(SelButton.Flag == 1){ 
                         if(selectedRow == 0){
-                            stateMachine = DEVICEMENU2;
-                            selectedRow = 1;
+                            stateMachine = DEVICEMENU;
+                           selectedRow = previousRow;
                         }
                         timeofstate = 0;                      
                     }
                     break;
                 case SYSTEMSCHECKS:
-                    if(SelButton.Flag == 1){
-                        stateMachine = CANCELSEL0;  // Cancel System Checks
-                    }
-                    if(sysCheckFlgs.podMissing == 1){
-                        stateMachine = PODMISSING;
-                    }
-                    else if(sysCheckFlgs.podExhausted == 1){
-                        stateMachine = PODEXHAUSTED;
-                    }
-                    else if(sysCheckFlgs.caseMissing == 1){
-                        stateMachine = CASEMISSING;
-                    }
-                    else if(sysCheckFlgs.cathMissing == 1){
-                        stateMachine = CATHMISSING;
-                    }
-                    else if(sysCheckFlgs.cathExhausted == 1){
-                        stateMachine = CATHEXHAUSTED;
-                    }
-                    else if(sysCheckFlgs.leaking == 1){
-                        stateMachine = LEAKING;
-                    }
-                    else if(sysCheckFlgs.wasteWaterReservoir == 1){
-                        stateMachine = WASTEWATERRESERVOIR;
-                    }
-                    else{
-                        if(timeofstate >= 5){
-                            stateMachine = CLEANING;    // All Checks Passed, move on to Cleaning Cycle State
-                            timeofstate = 0;
+                    if(timeofstate >= 3){
+                        if(SelButton.Flag == 1){
+                            stateMachine = CANCELSEL;  // Cancel System Checks
+                        }
+                        if(sysCheckFlgs.podMissing == 1){
+                            stateMachine = PODMISSING;
+                        }
+                        else if(sysCheckFlgs.podExhausted == 1){
+                            stateMachine = PODEXHAUSTED;
+                        }
+                        else if(sysCheckFlgs.caseMissing == 1){
+                            stateMachine = CASEMISSING;
+                        }
+                        else if(sysCheckFlgs.cathMissing == 1){
+                            stateMachine = CATHMISSING;
+                        }
+                        else if(sysCheckFlgs.cathExhausted == 1){
+                            stateMachine = CATHEXHAUSTED;
+                        }
+                        else if(sysCheckFlgs.leaking == 1){
+                            stateMachine = LEAKING;
+                        }
+                        else if(sysCheckFlgs.wasteWaterReservoir == 1){
+                            stateMachine = WASTEWATERRESERVOIR;
+                        }
+                        else{
+                            if(timeofstate >= SystemChecksTime){
+                                stateMachine = CLEANING;    // All Checks Passed, move on to Cleaning Cycle State
+                                timeofstate = 0;
+                            }
                         }
                     }
                     
                     break;
                 case PODMISSING:
                     if(SelButton.Flag == 1){        
-                        stateMachine = RUNCYCLE;        // Back to Idle Screen
+                        stateMachine = IDLE;        // Back to Idle Screen
                     }
                     break;
                 case PODEXHAUSTED:
                     if(SelButton.Flag == 1){
-                        stateMachine = RUNCYCLE;        // Back to Idle Screen
+                        stateMachine = IDLE;        // Back to Idle Screen
                     }
                     break;
                 case CASEMISSING:
                     if(SelButton.Flag == 1){
-                        stateMachine = RUNCYCLE;        // Back to Idle Screen
+                        stateMachine = IDLE;        // Back to Idle Screen
                     }
                     break;
                 case CATHMISSING:
                     if(SelButton.Flag == 1){
-                        stateMachine = RUNCYCLE;        // Back to Idle Screen
+                        stateMachine = IDLE;        // Back to Idle Screen
                     }
                     break;
                 case CATHEXHAUSTED:
                     if(SelButton.Flag == 1){
-                        stateMachine = RUNCYCLE;        // Back to Idle Screen
+                        stateMachine = IDLE;        // Back to Idle Screen
                     }
                     break;
                 case LEAKING:
                     if(SelButton.Flag == 1){
-                        stateMachine = RUNCYCLE;        // Back to Idle Screen
+                        stateMachine = IDLE;        // Back to Idle Screen
                     }
                     break;
                 case WASTEWATERRESERVOIR:
                     if(SelButton.Flag == 1){
-                        stateMachine = RUNCYCLE;        // Back to Idle Screen
+                        stateMachine = IDLE;        // Back to Idle Screen
                     }
                     break;
                 case CLEANING:
                     if(SelButton.Flag == 1){
-                        stateMachine = CANCELSEL0;  // Option to Cancel Cleaning Cycle
+                        stateMachine = CANCELSEL;  // Option to Cancel Cleaning Cycle
                         previousState = CLEANING;   // Save Previous State incase cancel not confirmed
                     }
                     if(timeofstate >= 5){               //TODO random value to trigger change
@@ -460,7 +448,7 @@ int main ( void )
                     break;
                 case DISINFECTION:
                     if(SelButton.Flag == 1){
-                        stateMachine = CANCELSEL0;  // Option to Cancel Cleaning Cycle
+                        stateMachine = CANCELSEL;  // Option to Cancel Cleaning Cycle
                         previousState = DISINFECTION; // Save Previous State incase cancel not confirmed
                     }
                     if(timeofstate >= 5){               //TODO random value to trigger change
@@ -470,7 +458,7 @@ int main ( void )
                     break;
                 case DRYING:
                     if(SelButton.Flag == 1){
-                        stateMachine = CANCELSEL0; // Option to Cancel Cleaning Cycle
+                        stateMachine = CANCELSEL; // Option to Cancel Cleaning Cycle
                         previousState = DRYING; // Save Previous State incase cancel not confirmed
                     }
                     if(timeofstate >= 5){               //TODO random value to trigger change
@@ -478,24 +466,27 @@ int main ( void )
                         timeofstate = 0;
                     }
                     break;
-                case CANCELSEL0:        // TODO combine CancelSel 0 and 1
+                case CANCELSEL:        // TODO combine CancelSel 0 and 1
+                    if(NavAButton.Flag == 1 || NavBButton.Flag == 1){   // Toggle Selections
+                        if(selectedRow == 1){
+                            selectedRow = 0;
+                        }else if(selectedRow == 0){
+                            selectedRow = 1;
+                        }
+                    }
+                    
                     if(SelButton.Flag == 1){
-                        stateMachine = previousState;   //Go back to state before cancel
-                        timeofstate = 0;
+                        if(selectedRow == 0){
+                            stateMachine = CANCELLED;
+                            timeofstate = 0;
+                        }
+                        else{
+                            stateMachine = previousState;   //Go back to state before cancel
+                        }
                     }
-                    if(NavAButton.Flag == 1 || NavBButton.Flag == 1){   //Navigate to select other option
-                        stateMachine = CANCELSEL1;      // Highlight Cancel Cycle
-                    }
+                    
                     break;
-                case CANCELSEL1:
-                    if(SelButton.Flag == 1){
-                        stateMachine = CANCELLED;
-                        timeofstate = 0;
-                    }
-                    if(NavAButton.Flag == 1 || NavBButton.Flag == 1){   //Navigate to select other option
-                        stateMachine = CANCELSEL0;      // Highlight Continue Cycle
-                    }
-                    break;
+                    
                 case COMPLETE:
                     if(EjectButton.Flag == 1){
                         stateMachine = LUBRICATION; // Lubricate and Eject
@@ -509,18 +500,26 @@ int main ( void )
                     break;
                 case CANCELPURGE:
                     if(SelButton.Flag == 1){
-                        stateMachine = RUNCYCLE;    // Cleaning Cycle Cancelled, return to IDLE
+                        stateMachine = IDLE;    // Cleaning Cycle Cancelled, return to IDLE
                     }
                     break;
                 case LUBRICATION:
-                    if(timeofstate >= 5){               //TODO random value to trigger change
+                    if(timeofstate >= LubricationTime){               //TODO random value to trigger change
                         stateMachine = DISCONNECT;      // After Lubrication, ready to disconnect
                         timeofstate = 0;
                     }
                     break;
                 case DISCONNECT:
-                    if(timeofstate >= 10){               //TODO random value to trigger , what triggers this?
-                        stateMachine = RUNCYCLE;        // Jump to IDLE screen when done
+                    EJECT_Set();    // Light Indicates Eject
+                    if(sysCheckFlgs.caseMissing == 0 && timeofstate >= SafeDisconnectTime){               //TODO random value to trigger , what triggers this?
+                        stateMachine = IDLE;        // Jump to IDLE screen when done
+                        //Eject Latch can close     
+                        EJECT_Clear();              // Case hasn't been ejected
+                        timeofstate = 0;
+                    }
+                    else if(sysCheckFlgs.caseMissing == 1){
+                        stateMachine = IDLE;
+                        //Eject Latch stays open    // Case was Ejected
                         timeofstate = 0;
                     }
                     break;
